@@ -13,7 +13,7 @@ import requests
 import json
 
 # Version of the current application (update this with each release)
-CURRENT_VERSION = "1.4"
+CURRENT_VERSION = "1.5"
 UPDATE_URL = "https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/version.json"
 BINARY_UPDATE_URL = "https://github.com/HomerSimpson88354/EternoSploit/releases/latest/download/EternoSploit.exe"
 SCRIPT_UPDATE_URL = "https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/EternoSploit.pyw"
@@ -584,7 +584,7 @@ credit_labels = []
 credits = [
     "Created by: Homer, Icey, Virck on discord",
     "API by: wearedevs",
-    "Version: 1.4"
+    "Version: 1.5"
 ]
 for credit in credits:
     label = tk.Label(credits_frame, text=credit, font=("Arial", 8), bg="#1a1a1a", fg="#ffffff")
@@ -601,3 +601,4 @@ apply_theme("Green")
 
 check_for_updates_on_startup()
 root.mainloop()
+
