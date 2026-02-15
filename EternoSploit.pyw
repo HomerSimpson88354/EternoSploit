@@ -153,7 +153,7 @@ getgenv().saveconfig = false
 loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
-
+HYPERSHOT_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/FeykHere/FeykhubOrignal/refs/heads/main/Feykhubloader"))()"""
 class AnimatedButton(tk.Button):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -333,7 +333,7 @@ def load_and_execute_script(script_name, loadstring):
     global attached
     script_input.delete("1.0", tk.END)
     script_input.insert("1.0", loadstring)
-    root.title(f"EternoSploit - 1.4 {script_name}")
+    root.title(f"EternoSploit - 1.5 {script_name}")
     if attached:
         try:
             execute(loadstring.encode('utf-8'))
@@ -401,6 +401,7 @@ def apply_theme(theme_name):
     ruhub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     rivals_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     brookhaven_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    hypershot_btn.configure(bg=theme["fg], fg=theme["highlight"])
     scripts_list.configure(bg=theme["fg"], fg=theme["highlight"])
     script_input.configure(bg=theme["fg"], fg=theme["highlight"], insertbackground=theme["highlight"])
     updates_display.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -509,6 +510,9 @@ rivals_btn.pack(fill=tk.X, padx=3, pady=1)
 brookhaven_btn = AnimatedButton(left_panel, text="Diablo0011 (Brookhaven RP Only)", bg="#0d0d0d", fg="#ffffff", command=load_brookhaven, font=("Arial", 8), width=12)
 brookhaven_btn.pack(fill=tk.X, padx=3, pady=1)
 
+hypershot_btn = AnimatedButton(left_panel, text = "Feykhub (Hypershot only)", bg="#0d0d0d", fg="#ffffff", command=load_hypershot_script, font=("Arial", 8), width=12)
+hypershot_btn.pack(fill=tk.X, padx=3, pady=1)
+
 scripts_list = tk.Listbox(left_panel, bg="#0d0d0d", fg="#ffffff", selectmode=tk.SINGLE, font=("Arial", 8), highlightthickness=0)
 scripts_list.pack(fill=tk.BOTH, expand=True, padx=3, pady=3)
 scripts_list.bind('<Double-Button-1>', lambda e: load_selected_script())
@@ -601,4 +605,5 @@ apply_theme("Green")
 
 check_for_updates_on_startup()
 root.mainloop()
+
 
