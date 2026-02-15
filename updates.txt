@@ -1,1 +1,0 @@
-EternoSploit working as of 2/15/2026, still fixing small bug issues related to certain scripts crashing when executed.
