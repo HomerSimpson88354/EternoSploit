@@ -1,1 +1,1 @@
-test update. There will be a fix for the update button looking not beautiful.
+Followup: The button is almost fixed. Do not be worried.
