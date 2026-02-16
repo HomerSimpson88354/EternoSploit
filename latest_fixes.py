@@ -687,7 +687,7 @@ def check_for_updates_on_startup():
     thread.start()
 
 load_last_fixes_hash()
-apply_theme("Red")
+apply_theme("White")
 root.after(500, check_for_updates_on_startup)
 debug_assets_folder()
 root.mainloop()
