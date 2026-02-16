@@ -287,7 +287,7 @@ def load_and_execute_script(script_name, loadstring):
     global attached
     script_input.delete("1.0", tk.END)
     script_input.insert("1.0", loadstring)
-    root.title(f"EternoSploit - 1.5 {script_name}")
+    root.title(f"EternoSploit - 1.4 {script_name}")
     if attached:
         try:
             execute(loadstring.encode('utf-8'))
