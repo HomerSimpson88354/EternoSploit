@@ -372,7 +372,7 @@ def fetch_code_fixes():
                 messagebox.showinfo("Up to Date", "You are already up to date with the latest version.")
                 print("Debug: Hashes match, no update needed")
                 return
-            # Content differs, overwrite the current script
+            
             with open(current_script_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
             save_last_fixes_hash(new_hash)
@@ -395,7 +395,7 @@ def restart_application():
         python = sys.executable
         script = sys.argv[0]
         args = sys.argv[1:]
-        # Use os.execv to restart the application
+      
         os.execv(python, [python, script] + args)
     except Exception as e:
         messagebox.showerror("Error", f"Failed to restart application: {str(e)}")
