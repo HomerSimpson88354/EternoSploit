@@ -446,13 +446,18 @@ def apply_theme(theme_name):
     simple_spy_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     dark_hub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     vega_x_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    cmd_x_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    reviz_admin_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    homebrew_admin_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    synapse_x_hub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    arsenal_script_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     scripts_list.configure(bg=theme["fg"], fg=theme["highlight"])
     script_input.configure(bg=theme["fg"], fg=theme["highlight"], insertbackground=theme["highlight"])
     updates_display.configure(bg=theme["fg"], fg=theme["highlight"])
     button_frame.configure(bg=theme["fg"])
     attach_btn.configure(bg=theme["bg"], fg=theme["highlight"])
     execute_btn.configure(bg=theme["bg"], fg=theme["highlight"])
-    kill_btn.configure(bg=theme["bg"], fg="#ff0000")
+    kill_btn.configure(bg=theme["bg"], fg="#ff0000") 
     open_btn.configure(bg=theme["bg"], fg=theme["highlight"])
     save_btn.configure(bg=theme["bg"], fg=theme["highlight"])
     settings_btn.configure(bg=theme["bg"], fg=theme["highlight"])
@@ -470,14 +475,16 @@ def apply_theme(theme_name):
         credits_title.configure(bg=theme["bg"], fg=theme["highlight"])
         for label in credit_labels:
             label.configure(bg=theme["bg"], fg=theme["highlight"])
+
     all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn,
-               dex_explorer_btn, simple_spy_btn, dark_hub_btn, vega_x_btn,
-               cmd_x_btn, reviz_admin_btn, homebrew_admin_btn, synapse_x_hub_btn, arsenal_script_btn,
-               attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, back_btn, check_updates_btn, fix_btn] + theme_buttons
+                   dex_explorer_btn, simple_spy_btn, dark_hub_btn, vega_x_btn, cmd_x_btn, reviz_admin_btn, homebrew_admin_btn, 
+                   synapse_x_hub_btn, arsenal_script_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
+                   back_btn, check_updates_btn, fix_btn] + theme_buttons
 
     for btn in all_buttons:
         btn.original_bg = btn['bg']
         btn.original_fg = btn['fg']
+
 
 def cycle_theme():
     global current_theme_idx
@@ -664,7 +671,7 @@ credit_labels = []
 credits = [
     "Created by: Homer, Icey, Virck on discord",
     "API by: wearedevs",
-    "Version: 1.3"
+    "Version: 1.4"
 ]
 for credit in credits:
     label = tk.Label(credits_frame, text=credit, font=("Arial", 8), bg="#1a1a1a", fg="#ffffff")
