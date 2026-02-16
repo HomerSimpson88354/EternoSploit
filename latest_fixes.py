@@ -428,7 +428,7 @@ def apply_theme(theme_name):
 
     all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn,                   
                    attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
-                   back_btn, check_updates_btn, fix_btn] + theme_buttons]
+                   back_btn, check_updates_btn, fix_btn] + theme_buttons
 
     for btn in all_buttons:
         btn.original_bg = btn['bg']
