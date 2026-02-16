@@ -694,6 +694,6 @@ def check_for_updates_on_startup():
 
 
 load_last_fixes_hash()
-apply_theme("Green")
+apply_theme("White")
 root.after(500, check_for_updates_on_startup)
 root.mainloop()
