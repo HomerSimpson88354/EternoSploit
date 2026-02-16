@@ -1,15 +1,11 @@
+# THIS CODE IS MEANT TO BE KEPT AS IS. ANY FORM OF MODIFICATION / SKIDDING TO THE SCRIPT IS PROHIBITED AND CAN RESULT IN CONSEQUENCES.
+# REACH OUT TO ANY OF THE DEVS AT https://discord.gg/w62KeAw4hK IF YOU HAVE ANY QUESTIONS ABOUT ADDING FEATURES OR DO ANYTHING. THANK YOU FOR YOUR TIME AND USAGE OF ETERNOSPLOIT.
+
 import tkinter as tk
 from tkinter import scrolledtext, messagebox, filedialog
-import ctypes
-import time
-import sys
-import os
-import platform
+import ctypes, time, sys, os, platform, requests, importlib, hashlib
 from ctypes import c_char_p
 from threading import Thread
-import requests
-import importlib
-import hashlib
 
 def check_windows_version():
     os_info = platform.uname()
@@ -79,7 +75,7 @@ HOMEBREW_ADMIN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubuserco
 SYNAPSE_X_HUB_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/synapsex-hub/synapsex/main/hub.lua", true))()"""
 ARSENAL_SCRIPT_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/fusionist/roblox/main/arsenal.lua", true))()"""
 
-
+# Above are all the scripts for games included with Eterno. We will continue to add more. if any questions, reach out to any of us at https://discord.gg/w62KeAw4hK
 
 def load_last_fixes_hash():
     global last_fixes_hash
@@ -508,7 +504,7 @@ root = tk.Tk()
 root.title("EternoSploit")
 root.geometry("900x700")
 root.configure(bg="#0d0d0d")
-
+# frames, buttons, themes and other stuff are down here.
 title_frame = tk.Frame(root, bg="#1a1a1a", height=40)
 title_frame.pack(fill=tk.X)
 title_frame.pack_propagate(False)
