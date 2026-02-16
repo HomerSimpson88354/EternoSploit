@@ -2,5 +2,5 @@ You are currently on the latest version (v1.4). More scripts and bug fixes have 
 
 It is recommended to daily check for bug fixes and feature updates by clicking "Check 4 Fixes" button.
 
-(note that some of the listed scripts are currently not working and we are currently working to resolve them.)
+We have also removed some scripts that do not work.
 
