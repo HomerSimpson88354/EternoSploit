@@ -36,7 +36,7 @@ for dll_path in dll_paths:
         continue
 
 if api_dll is None:
-    messagebox.showerror("Error", "wearedevs_exploit_api.dll not found!")
+    messagebox.showerror("Error", "wearedevs_exploit_api.dll not found. Make sure the DLL is in the same folder as EternoSploit.")
     sys.exit(1)
 
 initialize = api_dll.initialize
@@ -65,15 +65,6 @@ getgenv().saveconfig = false
 loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
-DEX_EXPLORER_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/RBLX_Scripts/main/Misc/DexExplorer.lua", true))()"""
-SIMPLE_SPY_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua"))()"""
-DARK_HUB_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/RandomAdamYT/DarkHub/master/Init", true))()"""
-VEGA_X_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/vega-x/vega-x/main/vega-x.lua"))()"""
-CMD_X_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/cmd-x/cmd-x/master/Source", true))()"""
-REVIZ_ADMIN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/2dgeneralspam1/scripts-and-stuff/master/scripts/Reviz%20Admin%20V2", true))()"""
-HOMEBREW_ADMIN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/homebrew-hub/HomebrewAdmin/master/Main.lua", true))()"""
-SYNAPSE_X_HUB_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/synapsex-hub/synapsex/main/hub.lua", true))()"""
-ARSENAL_SCRIPT_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/fusionist/roblox/main/arsenal.lua", true))()"""
 
 # Above are all the scripts for games included with Eterno. We will continue to add more. if any questions, reach out to any of us at https://discord.gg/w62KeAw4hK
 
@@ -311,34 +302,6 @@ def load_rivals():
 def load_brookhaven():
     load_and_execute_script("Brookhaven RP Script", BROOKHAVEN_LOADSTRING)
 
-def load_dex_explorer():
-    load_and_execute_script("Dex Explorer", DEX_EXPLORER_LOADSTRING)
-
-def load_simple_spy():
-    load_and_execute_script("Simple Spy", SIMPLE_SPY_LOADSTRING)
-
-def load_dark_hub():
-    load_and_execute_script("Dark Hub", DARK_HUB_LOADSTRING)
-
-def load_vega_x():
-    load_and_execute_script("Vega X", VEGA_X_LOADSTRING)
-    
-def load_cmd_x():
-    load_and_execute_script("CMD-X", CMD_X_LOADSTRING)
-
-def load_reviz_admin():
-    load_and_execute_script("Reviz Admin", REVIZ_ADMIN_LOADSTRING)
-
-def load_homebrew_admin():
-    load_and_execute_script("Homebrew Admin", HOMEBREW_ADMIN_LOADSTRING)
-
-def load_synapse_x_hub():
-    load_and_execute_script("Synapse X Hub", SYNAPSE_X_HUB_LOADSTRING)
-
-def load_arsenal_script():
-    load_and_execute_script("Arsenal Script", ARSENAL_SCRIPT_LOADSTRING)
-
-
 def check_for_updates():
     global updates_list
     github_updates_url = "https://github.com/HomerSimpson88354/EternoSploit/blob/main/updates.txt?raw=true"
@@ -438,15 +401,6 @@ def apply_theme(theme_name):
     ruhub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     rivals_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     brookhaven_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    dex_explorer_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    simple_spy_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    dark_hub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    vega_x_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    cmd_x_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    reviz_admin_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    homebrew_admin_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    synapse_x_hub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
-    arsenal_script_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     scripts_list.configure(bg=theme["fg"], fg=theme["highlight"])
     script_input.configure(bg=theme["fg"], fg=theme["highlight"], insertbackground=theme["highlight"])
     updates_display.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -472,10 +426,9 @@ def apply_theme(theme_name):
         for label in credit_labels:
             label.configure(bg=theme["bg"], fg=theme["highlight"])
 
-    all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn,
-                   dex_explorer_btn, simple_spy_btn, dark_hub_btn, vega_x_btn, cmd_x_btn, reviz_admin_btn, homebrew_admin_btn, 
-                   synapse_x_hub_btn, arsenal_script_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
-                   back_btn, check_updates_btn, fix_btn] + theme_buttons
+    all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn,                   
+                   attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
+                   back_btn, check_updates_btn, fix_btn] + theme_buttons]
 
     for btn in all_buttons:
         btn.original_bg = btn['bg']
@@ -560,34 +513,6 @@ rivals_btn.pack(fill=tk.X, padx=3, pady=1)
 
 brookhaven_btn = AnimatedButton(left_panel, text="Diablo0011 (Brookhaven RP Only)", bg="#0d0d0d", fg="#ffffff", command=load_brookhaven, font=("Arial", 8), width=12)
 brookhaven_btn.pack(fill=tk.X, padx=3, pady=1)
-
-dex_explorer_btn = AnimatedButton(left_panel, text="Dex Explorer (All Games)", bg="#0d0d0d", fg="#ffffff", command=load_dex_explorer, font=("Arial", 8), width=12)
-dex_explorer_btn.pack(fill=tk.X, padx=3, pady=1)
-
-simple_spy_btn = AnimatedButton(left_panel, text="Simple Spy (All Games)", bg="#0d0d0d", fg="#ffffff", command=load_simple_spy, font=("Arial", 8), width=12)
-simple_spy_btn.pack(fill=tk.X, padx=3, pady=1)
-
-dark_hub_btn = AnimatedButton(left_panel, text="Dark Hub (Multi Games)", bg="#0d0d0d", fg="#ffffff", command=load_dark_hub, font=("Arial", 8), width=12)
-dark_hub_btn.pack(fill=tk.X, padx=3, pady=1)
-
-vega_x_btn = AnimatedButton(left_panel, text="Vega X (Multi Games)", bg="#0d0d0d", fg="#ffffff", command=load_vega_x, font=("Arial", 8), width=12)
-vega_x_btn.pack(fill=tk.X, padx=3, pady=1)
-
-cmd_x_btn = AnimatedButton(left_panel, text="CMD-X (All Games)", bg="#0d0d0d", fg="#ffffff", command=load_cmd_x, font=("Arial", 8), width=12)
-cmd_x_btn.pack(fill=tk.X, padx=3, pady=1)
-
-reviz_admin_btn = AnimatedButton(left_panel, text="Reviz Admin (All Games)", bg="#0d0d0d", fg="#ffffff", command=load_reviz_admin, font=("Arial", 8), width=12)
-reviz_admin_btn.pack(fill=tk.X, padx=3, pady=1)
-
-homebrew_admin_btn = AnimatedButton(left_panel, text="Homebrew Admin (All Games)", bg="#0d0d0d", fg="#ffffff", command=load_homebrew_admin, font=("Arial", 8), width=12)
-homebrew_admin_btn.pack(fill=tk.X, padx=3, pady=1)
-
-synapse_x_hub_btn = AnimatedButton(left_panel, text="Synapse X Hub (Multi Games)", bg="#0d0d0d", fg="#ffffff", command=load_synapse_x_hub, font=("Arial", 8), width=12)
-synapse_x_hub_btn.pack(fill=tk.X, padx=3, pady=1)
-
-arsenal_script_btn = AnimatedButton(left_panel, text="Arsenal Script (Arsenal Only)", bg="#0d0d0d", fg="#ffffff", command=load_arsenal_script, font=("Arial", 8), width=12)
-arsenal_script_btn.pack(fill=tk.X, padx=3, pady=1)
-
 
 scripts_list = tk.Listbox(left_panel, bg="#0d0d0d", fg="#ffffff", selectmode=tk.SINGLE, font=("Arial", 8), highlightthickness=0)
 scripts_list.pack(fill=tk.BOTH, expand=True, padx=3, pady=3)
