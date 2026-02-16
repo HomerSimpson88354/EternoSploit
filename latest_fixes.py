@@ -66,8 +66,6 @@ loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
 
-# Above are all the scripts for games included with Eterno. We will continue to add more. if any questions, reach out to any of us at https://discord.gg/w62KeAw4hK
-
 def load_last_fixes_hash():
     global last_fixes_hash
     try:
@@ -80,7 +78,6 @@ def load_last_fixes_hash():
         print(f"Debug: Failed to load last fixes hash: {str(e)}")
         last_fixes_hash = None
 
-
 def save_last_fixes_hash(new_hash):
     global last_fixes_hash
     try:
@@ -90,7 +87,6 @@ def save_last_fixes_hash(new_hash):
         print(f"Debug: Saved new fixes hash: {new_hash}")
     except Exception as e:
         print(f"Debug: Failed to save last fixes hash: {str(e)}")
-
 
 def compute_hash(content):
     return hashlib.sha256(content.encode('utf-8')).hexdigest()
@@ -302,6 +298,62 @@ def load_rivals():
 def load_brookhaven():
     load_and_execute_script("Brookhaven RP Script", BROOKHAVEN_LOADSTRING)
 
+
+GITHUB_SCRIPT_URLS = {
+    "Aimbot": "https://github.com/HomerSimpson88354/EternoSploit/blob/main/Aimbot.txt?raw=true",
+    "Fly": "https://github.com/HomerSimpson88354/EternoSploit/blob/main/Fly.txt?raw=true",
+    "InfiniteJump": "https://github.com/HomerSimpson88354/EternoSploit/blob/main/InfiniteJump.txt?raw=true",
+    "Noclip": "https://github.com/HomerSimpson88354/EternoSploit/blob/main/Noclip.txt?raw=true"
+}
+
+def load_asset_script(script_name):
+    global attached
+    
+    script_url = GITHUB_SCRIPT_URLS.get(script_name)
+    if not script_url:
+        messagebox.showerror("Error", f"No GitHub URL configured for script: {script_name}")
+        print(f"Debug: No URL found for script {script_name} in GITHUB_SCRIPT_URLS")
+        return
+    
+    print(f"Debug: Fetching script {script_name} from {script_url}")
+    try:
+        response = requests.get(script_url, timeout=10)
+        if response.status_code == 200:
+            content = response.text
+            script_input.delete("1.0", tk.END)
+            script_input.insert("1.0", content)
+            root.title(f"EternoSploit - {script_name}")
+            if attached:
+                execute(content.encode('utf-8'))
+                messagebox.showinfo("Successful", f"{script_name} script executed.")
+            else:
+                messagebox.showerror("Error", "Please attach to Roblox first.")
+            print(f"Debug: Successfully fetched {script_name} from {script_url}")
+        else:
+            messagebox.showerror("Error", f"Failed to fetch {script_name}. Status code: {response.status_code}")
+            print(f"Debug: Failed to fetch {script_name} from {script_url}. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("Error", f"Could not connect to GitHub for {script_name}: {str(e)}")
+        print(f"Debug: Connection error while fetching {script_name} from {script_url}: {str(e)}")
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to load or execute {script_name}: {str(e)}")
+        print(f"Debug: General error processing {script_name}: {str(e)}")
+
+def load_aimbot():
+    load_asset_script("Aimbot")
+
+def load_fly():
+    load_asset_script("Fly")
+
+def load_infinitejump():
+    load_asset_script("InfiniteJump")
+
+def load_noclip():
+    load_asset_script("Noclip")
+
+def debug_assets_folder():
+    print(f"Debug: Asset scripts are now loaded from GitHub repository. Local assets folder is not used.")
+
 def check_for_updates():
     global updates_list
     github_updates_url = "https://github.com/HomerSimpson88354/EternoSploit/blob/main/updates.txt?raw=true"
@@ -353,12 +405,10 @@ def fetch_code_fixes():
         print(f"Debug: Error during script overwrite = {str(e)}")
 
 def restart_application():
-    """Restart the application to apply updates."""
     try:
         python = sys.executable
         script = sys.argv[0]
         args = sys.argv[1:]
-      
         os.execv(python, [python, script] + args)
     except Exception as e:
         messagebox.showerror("Error", f"Failed to restart application: {str(e)}")
@@ -391,6 +441,7 @@ def apply_theme(theme_name):
     left_title.configure(bg=theme["bg"], fg=theme["highlight"])
     folder_label.configure(bg=theme["bg"], fg=folder_label.cget("fg"))
     popular_scripts_label.configure(bg=theme["bg"], fg=theme["highlight"])
+    asset_scripts_label.configure(bg=theme["bg"], fg=theme["highlight"])
     right_title.configure(bg=theme["fg"], fg=theme["highlight"])
     updates_title.configure(bg=theme["bg"], fg=theme["highlight"])
     select_folder_btn.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -401,6 +452,10 @@ def apply_theme(theme_name):
     ruhub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     rivals_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     brookhaven_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    aimbot_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    fly_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    infinitejump_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    noclip_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     scripts_list.configure(bg=theme["fg"], fg=theme["highlight"])
     script_input.configure(bg=theme["fg"], fg=theme["highlight"], insertbackground=theme["highlight"])
     updates_display.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -426,14 +481,13 @@ def apply_theme(theme_name):
         for label in credit_labels:
             label.configure(bg=theme["bg"], fg=theme["highlight"])
 
-    all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn,                   
-                   attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
+    all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn, 
+                   aimbot_btn, fly_btn, infinitejump_btn, noclip_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
                    back_btn, check_updates_btn, fix_btn] + theme_buttons
 
     for btn in all_buttons:
         btn.original_bg = btn['bg']
         btn.original_fg = btn['fg']
-
 
 def cycle_theme():
     global current_theme_idx
@@ -457,7 +511,7 @@ root = tk.Tk()
 root.title("EternoSploit")
 root.geometry("900x700")
 root.configure(bg="#0d0d0d")
-# frames, buttons, themes and other stuff are down here.
+
 title_frame = tk.Frame(root, bg="#1a1a1a", height=40)
 title_frame.pack(fill=tk.X)
 title_frame.pack_propagate(False)
@@ -513,6 +567,21 @@ rivals_btn.pack(fill=tk.X, padx=3, pady=1)
 
 brookhaven_btn = AnimatedButton(left_panel, text="Diablo0011 (Brookhaven RP Only)", bg="#0d0d0d", fg="#ffffff", command=load_brookhaven, font=("Arial", 8), width=12)
 brookhaven_btn.pack(fill=tk.X, padx=3, pady=1)
+
+asset_scripts_label = tk.Label(left_panel, text="ASSET SCRIPTS", font=("Arial", 9, "bold"), bg="#1a1a1a", fg="#ffffff")
+asset_scripts_label.pack(pady=5)
+
+aimbot_btn = AnimatedButton(left_panel, text="Aimbot", bg="#0d0d0d", fg="#ffffff", command=load_aimbot, font=("Arial", 8), width=12)
+aimbot_btn.pack(fill=tk.X, padx=3, pady=1)
+
+fly_btn = AnimatedButton(left_panel, text="Fly", bg="#0d0d0d", fg="#ffffff", command=load_fly, font=("Arial", 8), width=12)
+fly_btn.pack(fill=tk.X, padx=3, pady=1)
+
+infinitejump_btn = AnimatedButton(left_panel, text="InfiniteJump", bg="#0d0d0d", fg="#ffffff", command=load_infinitejump, font=("Arial", 8), width=12)
+infinitejump_btn.pack(fill=tk.X, padx=3, pady=1)
+
+noclip_btn = AnimatedButton(left_panel, text="Noclip", bg="#0d0d0d", fg="#ffffff", command=load_noclip, font=("Arial", 8), width=12)
+noclip_btn.pack(fill=tk.X, padx=3, pady=1)
 
 scripts_list = tk.Listbox(left_panel, bg="#0d0d0d", fg="#ffffff", selectmode=tk.SINGLE, font=("Arial", 8), highlightthickness=0)
 scripts_list.pack(fill=tk.BOTH, expand=True, padx=3, pady=3)
@@ -617,8 +686,8 @@ def check_for_updates_on_startup():
     thread = Thread(target=fetch_updates, daemon=True)
     thread.start()
 
-
 load_last_fixes_hash()
-apply_theme("White")
+apply_theme("Red")
 root.after(500, check_for_updates_on_startup)
+debug_assets_folder()
 root.mainloop()
