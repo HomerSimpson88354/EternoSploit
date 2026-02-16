@@ -413,7 +413,7 @@ themes = {
 }
 theme_order = ["Green", "White", "Red", "Blue"]
 current_theme_idx = 0
-current_theme = themes["Green"]
+current_theme = themes["White"]
 
 def apply_theme(theme_name):
     global current_theme
@@ -641,7 +641,7 @@ check_updates_btn.pack(side=tk.LEFT, padx=3)
 settings_btn = AnimatedButton(button_frame, text="Settings", bg="#1a1a1a", fg="#ffffff", command=show_settings, font=("Arial", 8), width=12)
 settings_btn.pack(side=tk.LEFT, padx=3)
 
-fix_btn = AnimatedButton(button_frame, text="Apply Fixes", bg="#1a1a1a", fg="#ffffff", command=fetch_code_fixes, font=("Arial", 8), width=12)
+fix_btn = AnimatedButton(button_frame, text="Check 4 Fixes", bg="#1a1a1a", fg="#ffffff", command=fetch_code_fixes, font=("Arial", 8), width=12)
 fix_btn.pack(side=tk.LEFT, padx=3)
 
 settings_panel = tk.Frame(root, bg="#1a1a1a")
