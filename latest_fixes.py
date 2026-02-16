@@ -59,7 +59,7 @@ scripts_list_dict = {}
 updates_list = []
 last_fixes_hash_file = os.path.join(os.getcwd(), "last_fixes_hash.txt")
 last_fixes_hash = None
-#third test negaaaa also virck is my son
+
 INFINITE_YIELD_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"
 OWL_HUB_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt'))()"
 FTAP_BLOODYV2_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/BloodyV2/BloodyScript/refs/heads/main/Free",true))()"""
@@ -80,7 +80,7 @@ SYNAPSE_X_HUB_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercon
 ARSENAL_SCRIPT_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/fusionist/roblox/main/arsenal.lua", true))()"""
 
 
-# Load the last applied fixes hash from a file on startup
+
 def load_last_fixes_hash():
     global last_fixes_hash
     try:
@@ -93,7 +93,7 @@ def load_last_fixes_hash():
         print(f"Debug: Failed to load last fixes hash: {str(e)}")
         last_fixes_hash = None
 
-# Save the last applied fixes hash to a file
+
 def save_last_fixes_hash(new_hash):
     global last_fixes_hash
     try:
@@ -104,7 +104,7 @@ def save_last_fixes_hash(new_hash):
     except Exception as e:
         print(f"Debug: Failed to save last fixes hash: {str(e)}")
 
-# Compute SHA-256 hash of content for comparison
+
 def compute_hash(content):
     return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
@@ -376,7 +376,7 @@ def fetch_code_fixes():
                 messagebox.showinfo("Up to Date", "You are already up to date with the latest version.")
                 print("Debug: Hashes match, no update needed")
                 return
-            # Content differs, overwrite the current script
+          
             with open(current_script_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
             save_last_fixes_hash(new_hash)
@@ -399,7 +399,7 @@ def restart_application():
         python = sys.executable
         script = sys.argv[0]
         args = sys.argv[1:]
-        # Use os.execv to restart the application
+     
         os.execv(python, [python, script] + args)
     except Exception as e:
         messagebox.showerror("Error", f"Failed to restart application: {str(e)}")
@@ -696,7 +696,7 @@ def check_for_updates_on_startup():
     thread = Thread(target=fetch_updates, daemon=True)
     thread.start()
 
-# Load the last fixes hash at startup
+
 load_last_fixes_hash()
 apply_theme("Green")
 root.after(500, check_for_updates_on_startup)
