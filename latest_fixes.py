@@ -191,7 +191,7 @@ def attach_roblox():
                 if attempt < max_retries:
                     time.sleep(0)
                 else:
-                    messagebox.showerror("Error", "The API couldn't start. It usually starts on the second attach attempt to fully load itself. Please try again.")
+                    messagebox.showerror("Error", "The API couldn't start. It usually starts on the second attach attempt to fully load itself. Please make sure you join a game and try again.")
                     return
         attempt += 1
     if not attached:
