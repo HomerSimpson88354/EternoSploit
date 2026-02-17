@@ -196,7 +196,8 @@ def attach_roblox():
         attempt += 1
     if not attached:
         messagebox.showerror("Error", f"Failed to attach. Please try again and ensure Roblox is running and you're in a game.")
-
+        
+#executes lua code in the executor box.
 def execute_code():
     global attached
     if not attached:
@@ -211,7 +212,8 @@ def execute_code():
         messagebox.showinfo("Successful", "Script executed successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"Couldn't execute the script: {str(e)}")
-
+        
+#kills the roblox process.
 def kill_roblox():
     global attached
     if not attached:
@@ -399,13 +401,13 @@ def fetch_code_fixes():
 
 def restart_application():
     try:
-        # Determine the executable and script path reliably
+        
         python = sys.executable if sys.executable else "python"
         script = os.path.abspath(sys.argv[0])
         args = sys.argv[1:]
         cmd = [python, script] + args
         print(f"Debug: Restarting with command: {cmd}")
-        # Start a new instance with preserved working directory and environment
+       
         subprocess.Popen(
             cmd,
             cwd=os.getcwd(),
@@ -413,16 +415,17 @@ def restart_application():
             close_fds=True,
             shell=False
         )
-        # Add a small delay to ensure the new process starts before exiting
+        # added small delay to ensure the new process starts before exiting as it wasnt before.
         time.sleep(1)
         print("Debug: New instance launched, terminating current process.")
-        # Terminate the current process
+    
         sys.exit(0)
     except Exception as e:
         error_msg = f"Failed to restart application: {str(e)}"
         messagebox.showerror("Error", error_msg)
         print(f"Debug: Restart failed: {error_msg}")
-
+        
+# mostly just themes and stuff, semi fancy i guess.
 themes = {
     "Green": {"bg": "#1a1a1a", "fg": "#0d0d0d", "highlight": "#00ff00"},
     "White": {"bg": "#2a2a2a", "fg": "#1d1d1d", "highlight": "#ffffff"},
@@ -516,7 +519,7 @@ def show_main():
     main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
     back_btn.pack_forget()
     settings_btn.pack(side=tk.LEFT, padx=3)
-
+# gui functions r here.
 root = tk.Tk()
 root.title("EternoSploit")
 root.geometry("900x700")
