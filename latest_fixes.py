@@ -8,6 +8,7 @@ import ctypes, time, sys, os, platform, requests, importlib, hashlib
 from ctypes import c_char_p
 from threading import Thread
 
+#Currently gotta fix the issue with the script not starting back up after updating for some users.
 
 dll_paths = [
     "wearedevs_exploit_api.dll",
