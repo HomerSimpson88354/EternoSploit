@@ -375,8 +375,8 @@ def fetch_code_fixes():
             with open(current_script_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
             save_last_fixes_hash(new_hash)
-            messagebox.showinfo("Update Applied", "New version downloaded. Restarting EternoSploit to apply changes...")
-            print("Debug: Script overwritten with new content, restarting application")
+            messagebox.showinfo("Update Applied", "New version downloaded. Please reopen EternoSploit to apply changes.")
+            print("Debug: Script overwritten with new content, restarting EternoSploit")
             restart_application()
         else:
             messagebox.showerror("Error", f"Failed to fetch code fixes. Status code: {response.status_code}")
