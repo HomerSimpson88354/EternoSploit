@@ -1,4 +1,4 @@
-# THIS CODE IS MEANT TO BE KEPT AS IS. ANY FORM OF MODIFICATION / SKIDDING TO THE SCRIPT IS PROHIBITED AND CAN RESULT IN CONSEQUENCES.
+# THIS CODE IS MEANT TO BE KEPT AS IS. ANY FORM OF MODIFICATION / SKIDDING TO THE SCRIPT IS PROHIBITED.
 # REACH OUT TO ANY OF THE DEVS AT https://discord.gg/w62KeAw4hK IF YOU HAVE ANY QUESTIONS ABOUT ADDING FEATURES OR DO ANYTHING. THANK YOU FOR YOUR TIME AND USAGE OF ETERNOSPLOIT.
 
 import tkinter as tk
@@ -8,8 +8,9 @@ from ctypes import c_char_p
 from threading import Thread
 import subprocess
 
-# Currently gotta fix the issue with the script not starting back up after updating for some users. baka jaka
+# Currently gotta fix the issue with the script not starting back up after updating for some users.
 
+#this is where it detects the dll name and attaches with it.
 dll_paths = [
     "wearedevs_exploit_api.dll",
     os.path.join(os.getcwd(), "wearedevs_exploit_api.dll"),
@@ -43,9 +44,13 @@ current_file = None
 scripts_folder = None
 scripts_list_dict = {}
 updates_list = []
+
+#this is the update memory file function that helps with detecting new code in the repo on github.
 last_fixes_hash_file = os.path.join(os.getcwd(), "last_fixes_hash.txt")
 last_fixes_hash = None
 
+
+#these are all of the loadstrings for popular scripts for specific games.
 INFINITE_YIELD_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"
 OWL_HUB_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt'))()"
 FTAP_BLOODYV2_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/BloodyV2/BloodyScript/refs/heads/main/Free",true))()"""
@@ -56,6 +61,7 @@ loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
 
+#this is also a part of the update memory file function.
 def load_last_fixes_hash():
     global last_fixes_hash
     try:
@@ -269,7 +275,8 @@ def load_and_execute_script(script_name, loadstring):
             messagebox.showerror("Error", f"Couldn't execute {script_name}: {str(e)}")
     else:
         messagebox.showerror("Error", "Please attach to Roblox first.")
-
+        
+# second part of the loadstring scripts function.
 def load_infinite_yield():
     load_and_execute_script("Infinite Yield", INFINITE_YIELD_LOADSTRING)
 
@@ -288,7 +295,7 @@ def load_rivals():
 def load_brookhaven():
     load_and_execute_script("Brookhaven RP Script", BROOKHAVEN_LOADSTRING)
 
-
+# these are basic exploit loadstring scripts. nothing too fancy.
 GITHUB_SCRIPT_URLS = {
     "Aimbot": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Aimbot.lua?raw=true"))()""",
     "Fly": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fly.lua?raw=true"))()   """,
@@ -339,6 +346,7 @@ def load_esp():
 def debug_assets_folder():
     print(f"Debug: Asset scripts are now loaded from GitHub repository. Local assets folder is not used.")
 
+#checking for message updates in the box on startup.
 def check_for_updates():
     global updates_list
     github_updates_url = "https://github.com/HomerSimpson88354/EternoSploit/blob/main/updates.txt?raw=true"
