@@ -401,7 +401,6 @@ def fetch_code_fixes():
 
 def restart_application():
     try:
-        
         python = sys.executable if sys.executable else "python"
         script = os.path.abspath(sys.argv[0])
         args = sys.argv[1:]
@@ -511,15 +510,18 @@ def cycle_theme():
 def show_settings():
     main_frame.pack_forget()
     settings_panel.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+    # Hide Settings button and show Back button in the same spot
     settings_btn.pack_forget()
-    back_btn.pack(side=tk.LEFT, padx=3)
+    back_btn.pack(side=tk.LEFT, padx=3, before=fix_btn)
 
 def show_main():
     settings_panel.pack_forget()
     main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+    # Hide Back button and show Settings button in the same spot
     back_btn.pack_forget()
-    settings_btn.pack(side=tk.LEFT, padx=3)
-# gui functions r here.
+    settings_btn.pack(side=tk.LEFT, padx=3, before=fix_btn)
+
+# GUI functions are here.
 root = tk.Tk()
 root.title("EternoSploit")
 root.geometry("900x700")
@@ -647,7 +649,7 @@ check_updates_btn.pack(side=tk.LEFT, padx=3)
 settings_btn = AnimatedButton(button_frame, text="Settings", bg="#1a1a1a", fg="#ffffff", command=show_settings, font=("Arial", 8), width=12)
 settings_btn.pack(side=tk.LEFT, padx=3)
 
-fix_btn = AnimatedButton(button_frame, text="Check 4 Fixes", bg="#1a1a1a", fg="#ffffff", command=fetch_code_fixes, font=("Arial", 8), width=12)
+fix_btn = AnimatedButton(button_frame, text="Load Updates", bg="#1a1a1a", fg="#ffffff", command=fetch_code_fixes, font=("Arial", 8), width=12)
 fix_btn.pack(side=tk.LEFT, padx=3)
 
 settings_panel = tk.Frame(root, bg="#1a1a1a")
@@ -685,6 +687,7 @@ for credit in credits:
     credit_labels.append(label)
 
 back_btn = AnimatedButton(button_frame, text="Back", bg="#1a1a1a", fg="#ffffff", command=show_main, font=("Arial", 8), width=12)
+
 
 def check_for_updates_on_startup():
     def fetch_updates():
