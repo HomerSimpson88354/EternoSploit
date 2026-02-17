@@ -81,4 +81,5 @@ end
 end)
 Fly()
 
-print("Fly script redistributed by https://wearedevs.net/")
+
+
