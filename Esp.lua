@@ -1,110 +1,3 @@
---[[ how esp works:
-
-    layout:
-    ┌─────────┐  
-    │  Name   │  <- name/info
-    │ [100HP] │  <- health text
-    ├──┐  ┌──┤  <- box corners
-    │  │  │  │
-    │  └──┘  │
-    ║   │    │  <- health bar (left/right)
-    └───║────┘
-        ║      <- tracer line
-        ▼    
-    [origin]   <- bottom/mouse/center/top
-
-    box types:
-    corners:       full:         3d:
-    ┌─┐  ┌─┐      ┌──────┐      ┌──────┐╗
-    │ │  │ │      │      │      │      │║
-    │ │  │ │      │      │      │      │║
-    └─┘  └─┘      └──────┘      └──────┘║
-                                 ╚═══════╝
-
-    esp creation process:
-    Player -> Character -> HumanoidRootPart
-         │
-         ├─> Box ESP (3 styles)
-         │   ├─> Corner: 8 lines for corners
-         │   ├─> Full: 4 lines for box
-         │   └─> 3D: 12 lines + connectors
-         │
-         ├─> Skeleton ESP
-         │   ├─> Joint Connections
-         │   │   ├─> Head -> Torso
-         │   │   ├─> Torso -> Arms
-         │   │   ├─> Torso -> Legs
-         │   │   └─> Arms/Legs Segments
-         │   ├─> Dynamic Updates
-         │   └─> Color + Thickness
-         │
-         ├─> Chams
-         │   ├─> Character Highlight
-         │   ├─> Fill Color + Transparency
-         │   ├─> Outline Color + Thickness
-         │   └─> Occluded Color (through walls)
-         │
-         ├─> Tracer
-         │   └─> line from origin (4 positions)
-         │
-         ├─> Health Bar
-         │   ├─> outline (background)
-         │   ├─> fill (dynamic color)
-         │   └─> text (HP/percentage)
-         │
-         └─> Info
-             └─> name text
-
-    technical implementation:
-    ┌─ Camera Calculations ─────────────────┐
-    │ 1. Get Character CFrame & Size        │
-    │ 2. WorldToViewportPoint for corners   │
-    │ 3. Convert 3D -> 2D positions         │
-    │ 4. Check if on screen                 │
-    │ 5. Calculate screen dimensions        │
-    └─────────────────────────────────────┘
-
-    ┌─ Drawing Creation ──────────────────┐
-    │ Line:   From/To positions           │
-    │ Square: Position + Size             │
-    │ Text:   Position + String           │
-    │ All:    Color/Transparency/Visible  │
-    └────────────────────────────────────┘
-
-    ┌─ Math & Checks ───────────────────────┐
-    │ Distance = (Player - Camera).Magnitude │
-    │ OnScreen = Z > 0 && in ViewportSize   │
-    │ BoxSize = WorldToScreen(Extents)      │
-    │ Scaling = 1000/Position.Z            │
-    └─────────────────────────────────────┘
-
-    effects:
-    ┌─ Rainbow Options ─┐
-    │ - All            │
-    │ - Box Only       │
-    │ - Tracers Only   │
-    │ - Text Only      │
-    └──────────────────┘
-
-    colors:
-    ┌─ Team Colors ────┐  ┌─ Health Colors ─┐
-    │ Enemy: Red       │  │ Full: Green     │
-    │ Ally: Green     │  │ Low: Red        │
-    │ Rainbow: HSV    │  │ Mid: Yellow     │
-    └────────────────┘  └────────────────┘
-
-    performance:
-    ┌─ Settings ───────┐
-    │ Refresh: 144fps  │
-    │ Distance: 5000   │
-    │ Cleanup: Auto    │
-    └──────────────────┘
-
-    update cycle:
-    RenderStepped -> Check Settings -> Get Positions -> Update Drawings
-         │                                                    │
-         └────────────────── 144fps ─────────────────────────┘
-]]
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
@@ -264,31 +157,28 @@ local function CreateESP(player)
     Highlights[player] = highlight
     
     local skeleton = {
-        -- Spine & Head
+        
         Head = Drawing.new("Line"),
         Neck = Drawing.new("Line"),
         UpperSpine = Drawing.new("Line"),
         LowerSpine = Drawing.new("Line"),
         
-        -- Left Arm
+      
         LeftShoulder = Drawing.new("Line"),
         LeftUpperArm = Drawing.new("Line"),
         LeftLowerArm = Drawing.new("Line"),
         LeftHand = Drawing.new("Line"),
         
-        -- Right Arm
         RightShoulder = Drawing.new("Line"),
         RightUpperArm = Drawing.new("Line"),
         RightLowerArm = Drawing.new("Line"),
         RightHand = Drawing.new("Line"),
-        
-        -- Left Leg
+    
         LeftHip = Drawing.new("Line"),
         LeftUpperLeg = Drawing.new("Line"),
         LeftLowerLeg = Drawing.new("Line"),
         LeftFoot = Drawing.new("Line"),
-        
-        -- Right Leg
+    
         RightHip = Drawing.new("Line"),
         RightUpperLeg = Drawing.new("Line"),
         RightLowerLeg = Drawing.new("Line"),
@@ -388,7 +278,7 @@ local function UpdateESP(player)
     
     local character = player.Character
     if not character then 
-        -- Hide all drawings if character doesn't exist
+     
         for _, obj in pairs(esp.Box) do obj.Visible = false end
         esp.Tracer.Visible = false
         for _, obj in pairs(esp.HealthBar) do obj.Visible = false end
@@ -422,7 +312,7 @@ local function UpdateESP(player)
         return 
     end
     
-    -- Early screen check to hide all drawings if player is off screen
+ 
     local _, isOnScreen = Camera:WorldToViewportPoint(rootPart.Position)
     if not isOnScreen then
         for _, obj in pairs(esp.Box) do obj.Visible = false end
@@ -495,7 +385,7 @@ local function UpdateESP(player)
     local boxPosition = Vector2.new(top.X - boxWidth/2, top.Y)
     local boxSize = Vector2.new(boxWidth, screenSize)
     
-    -- Hide all box parts by default
+  
     for _, obj in pairs(esp.Box) do
         obj.Visible = false
     end
