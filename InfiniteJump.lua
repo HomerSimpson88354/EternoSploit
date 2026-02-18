@@ -54,7 +54,7 @@ game:GetService'RunService'.RenderStepped:Connect(function()
                 local rightVector = rootPart.CFrame.RightVector
                 
                 local forwardVelocity = Vector3.new(0, 0, 0)
-                local speed = 5 
+                local speed = 2
                 
                 if moveForward then
                     forwardVelocity = forwardVelocity + (lookVector * speed)
@@ -78,3 +78,4 @@ game:GetService'RunService'.RenderStepped:Connect(function()
         end
     end
 end)
+
