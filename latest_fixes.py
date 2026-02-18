@@ -8,7 +8,7 @@ from ctypes import c_char_p
 from threading import Thread
 import subprocess
 
-# Currently gotta fix the issue with the script not starting back up after updating for some users.
+# Currently gotta fix the issue with the script not starting back up after updating for some users.(fixed)
 
 # This is where it detects the dll name and attaches with it.
 dll_paths = [
@@ -290,7 +290,7 @@ def load_rivals():
 def load_brookhaven():
     load_and_execute_script("Brookhaven RP Script", BROOKHAVEN_LOADSTRING)
 
-# These are basic exploit loadstring scripts. Nothing too fancy.
+# These are basic exploit loadstring scripts. pretty fancy. 
 GITHUB_SCRIPT_URLS = {
     "Aimbot": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Aimbot.lua?raw=true"))()""",
     "Fly": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fly.lua?raw=true"))()""",
