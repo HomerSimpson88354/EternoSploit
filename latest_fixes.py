@@ -10,7 +10,7 @@ import subprocess
 
 # Currently gotta fix the issue with the script not starting back up after updating for some users.
 
-#this is where it detects the dll name and attaches with it.
+# This is where it detects the dll name and attaches with it.
 dll_paths = [
     "wearedevs_exploit_api.dll",
     os.path.join(os.getcwd(), "wearedevs_exploit_api.dll"),
@@ -45,12 +45,11 @@ scripts_folder = None
 scripts_list_dict = {}
 updates_list = []
 
-#this is the update memory file function that helps with detecting new code in the repo on github.
+# This is the update memory file function that helps with detecting new code in the repo on github.
 last_fixes_hash_file = os.path.join(os.getcwd(), "last_fixes_hash.txt")
 last_fixes_hash = None
 
-
-#these are all of the loadstrings for popular scripts for specific games.
+# These are all of the loadstrings for popular scripts for specific games.
 INFINITE_YIELD_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"
 OWL_HUB_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt'))()"
 FTAP_BLOODYV2_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/BloodyV2/BloodyScript/refs/heads/main/Free",true))()"""
@@ -61,7 +60,7 @@ loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
 
-#this is also a part of the update memory file function.
+# This is also a part of the update memory file function.
 def load_last_fixes_hash():
     global last_fixes_hash
     try:
@@ -197,7 +196,7 @@ def attach_roblox():
     if not attached:
         messagebox.showerror("Error", f"Failed to attach. Please try again and ensure Roblox is running and you're in a game.")
         
-#executes lua code in the executor box.
+# Executes lua code in the executor box.
 def execute_code():
     global attached
     if not attached:
@@ -213,7 +212,7 @@ def execute_code():
     except Exception as e:
         messagebox.showerror("Error", f"Couldn't execute the script: {str(e)}")
         
-#kills the roblox process.
+# Kills the roblox process.
 def kill_roblox():
     global attached
     if not attached:
@@ -278,7 +277,7 @@ def load_and_execute_script(script_name, loadstring):
     else:
         messagebox.showerror("Error", "Please attach to Roblox first.")
         
-# second part of the loadstring scripts function.
+# Second part of the loadstring scripts function.
 def load_infinite_yield():
     load_and_execute_script("Infinite Yield", INFINITE_YIELD_LOADSTRING)
 
@@ -297,14 +296,15 @@ def load_rivals():
 def load_brookhaven():
     load_and_execute_script("Brookhaven RP Script", BROOKHAVEN_LOADSTRING)
 
-# these are basic exploit loadstring scripts. nothing too fancy.
+# These are basic exploit loadstring scripts. Nothing too fancy.
 GITHUB_SCRIPT_URLS = {
     "Aimbot": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Aimbot.lua?raw=true"))()""",
-    "Fly": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fly.lua?raw=true"))()   """,
+    "Fly": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fly.lua?raw=true"))()""",
     "InfiniteJump": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/InfiniteJump.lua?raw=true"))()""",
     "Noclip": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Noclip.lua?raw=true"))()""",
     "ESP": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Esp.lua?raw=true"))()""",
-    "Fling": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fling.lua?raw=true"))()"""
+    "Fling": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fling.lua?raw=true"))()""",
+    "WalkSpeed": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/WalkSpeed.lua?raw=true"))()""",
 }
 
 def load_asset_script(script_name):
@@ -349,10 +349,13 @@ def load_esp():
 def load_fling():
     load_asset_script("Fling")
 
+def load_walkspeed():
+    load_asset_script("WalkSpeed")
+
 def debug_assets_folder():
     print(f"Debug: Asset scripts are now loaded from GitHub repository. Local assets folder is not used.")
 
-#checking for message updates in the box on startup.
+# Checking for message updates in the box on startup.
 def check_for_updates():
     global updates_list
     github_updates_url = "https://github.com/HomerSimpson88354/EternoSploit/blob/main/updates.txt?raw=true"
@@ -418,7 +421,7 @@ def restart_application():
             close_fds=True,
             shell=False
         )
-        # added small delay to ensure the new process starts before exiting as it wasnt before.
+        # Added small delay to ensure the new process starts before exiting as it wasn't before.
         time.sleep(1)
         print("Debug: New instance launched, terminating current process.")
     
@@ -428,7 +431,7 @@ def restart_application():
         messagebox.showerror("Error", error_msg)
         print(f"Debug: Restart failed: {error_msg}")
         
-# mostly just themes and stuff, semi fancy i guess.
+# Mostly just themes and stuff, semi fancy I guess.
 themes = {
     "Green": {"bg": "#1a1a1a", "fg": "#0d0d0d", "highlight": "#00ff00"},
     "White": {"bg": "#2a2a2a", "fg": "#1d1d1d", "highlight": "#ffffff"},
@@ -473,6 +476,7 @@ def apply_theme(theme_name):
     noclip_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     esp_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     fling_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    walkspeed_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     scripts_list.configure(bg=theme["fg"], fg=theme["highlight"])
     script_input.configure(bg=theme["fg"], fg=theme["highlight"], insertbackground=theme["highlight"])
     updates_display.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -499,7 +503,7 @@ def apply_theme(theme_name):
             label.configure(bg=theme["bg"], fg=theme["highlight"])
 
     all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn, 
-                   aimbot_btn, fly_btn, infinitejump_btn, noclip_btn, esp_btn, fling_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
+                   aimbot_btn, fly_btn, infinitejump_btn, noclip_btn, esp_btn, fling_btn, walkspeed_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
                    back_btn, check_updates_btn, fix_btn] + theme_buttons
 
     for btn in all_buttons:
@@ -551,7 +555,7 @@ status_label.pack(side=tk.LEFT)
 main_frame = tk.Frame(root, bg="#0d0d0d")
 main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-left_panel = tk.Frame(main_frame, bg="#1a1a1a", width=200)
+left_panel = tk.Frame(main_frame, bg="#1a1a1a", width=220)  # Slightly increased width to accommodate buttons
 left_panel.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 5))
 left_panel.pack_propagate(False)
 
@@ -562,55 +566,58 @@ folder_label = tk.Label(left_panel, text="No Folders have been found.", font=("A
 folder_label.pack(pady=3)
 
 select_folder_btn = AnimatedButton(left_panel, text="Choose a folder", bg="#0d0d0d", fg="#ffffff", command=select_scripts_folder, font=("Arial", 8), width=12)
-select_folder_btn.pack(fill=tk.X, padx=3, pady=1)
+select_folder_btn.pack(fill=tk.X, padx=5, pady=2)
 
 load_btn = AnimatedButton(left_panel, text="Upload", bg="#0d0d0d", fg="#ffffff", command=load_scripts, font=("Arial", 8), width=12)
-load_btn.pack(fill=tk.X, padx=3, pady=1)
+load_btn.pack(fill=tk.X, padx=5, pady=2)
 
 popular_scripts_label = tk.Label(left_panel, text="POPULAR SCRIPTS", font=("Arial", 9, "bold"), bg="#1a1a1a", fg="#ffffff")
 popular_scripts_label.pack(pady=5)
 
 infinite_yield_btn = AnimatedButton(left_panel, text="Infinite Yield(All Games)", bg="#0d0d0d", fg="#ffffff", command=load_infinite_yield, font=("Arial", 8), width=12)
-infinite_yield_btn.pack(fill=tk.X, padx=3, pady=1)
+infinite_yield_btn.pack(fill=tk.X, padx=5, pady=2)
 
 owl_hub_btn = AnimatedButton(left_panel, text="Owl Hub (All Games)", bg="#0d0d0d", fg="#ffffff", command=load_owl_hub, font=("Arial", 8), width=12)
-owl_hub_btn.pack(fill=tk.X, padx=3, pady=1)
+owl_hub_btn.pack(fill=tk.X, padx=5, pady=2)
 
 bloodyv2_btn = AnimatedButton(left_panel, text="FTAP BloodyV2 (FTAP Game Only)", bg="#0d0d0d", fg="#ffffff", command=lambda: load_and_execute_script("FTAP BloodyV2", FTAP_BLOODYV2_LOADSTRING), font=("Arial", 8), width=12)
-bloodyv2_btn.pack(fill=tk.X, padx=3, pady=1)
+bloodyv2_btn.pack(fill=tk.X, padx=5, pady=2)
 
 ruhub_btn = AnimatedButton(left_panel, text="Ruhub FTAP (FTAP Game Only)", bg="#0d0d0d", fg="#ffffff", command=lambda: load_and_execute_script("Ruhub FTAP", RUHUB_FTAP_LOADSTRING), font=("Arial", 8), width=12)
-ruhub_btn.pack(fill=tk.X, padx=3, pady=1)
+ruhub_btn.pack(fill=tk.X, padx=5, pady=2)
 
 rivals_btn = AnimatedButton(left_panel, text="Soluna (Rivals Only)", bg="#0d0d0d", fg="#ffffff", command=lambda: load_and_execute_script("Rivals", RIVALS_LOADSTRING), font=("Arial", 8), width=12)
-rivals_btn.pack(fill=tk.X, padx=3, pady=1)
+rivals_btn.pack(fill=tk.X, padx=5, pady=2)
 
 brookhaven_btn = AnimatedButton(left_panel, text="Diablo0011 (Brookhaven RP Only)", bg="#0d0d0d", fg="#ffffff", command=load_brookhaven, font=("Arial", 8), width=12)
-brookhaven_btn.pack(fill=tk.X, padx=3, pady=1)
+brookhaven_btn.pack(fill=tk.X, padx=5, pady=2)
 
 asset_scripts_label = tk.Label(left_panel, text="ASSET SCRIPTS", font=("Arial", 9, "bold"), bg="#1a1a1a", fg="#ffffff")
 asset_scripts_label.pack(pady=5)
 
 aimbot_btn = AnimatedButton(left_panel, text="Aimbot", bg="#0d0d0d", fg="#ffffff", command=load_aimbot, font=("Arial", 8), width=12)
-aimbot_btn.pack(fill=tk.X, padx=3, pady=1)
+aimbot_btn.pack(fill=tk.X, padx=5, pady=2)
 
 fly_btn = AnimatedButton(left_panel, text="Fly", bg="#0d0d0d", fg="#ffffff", command=load_fly, font=("Arial", 8), width=12)
-fly_btn.pack(fill=tk.X, padx=3, pady=1)
+fly_btn.pack(fill=tk.X, padx=5, pady=2)
 
 infinitejump_btn = AnimatedButton(left_panel, text="InfiniteJump", bg="#0d0d0d", fg="#ffffff", command=load_infinitejump, font=("Arial", 8), width=12)
-infinitejump_btn.pack(fill=tk.X, padx=3, pady=1)
+infinitejump_btn.pack(fill=tk.X, padx=5, pady=2)
 
 noclip_btn = AnimatedButton(left_panel, text="Noclip", bg="#0d0d0d", fg="#ffffff", command=load_noclip, font=("Arial", 8), width=12)
-noclip_btn.pack(fill=tk.X, padx=3, pady=1)
+noclip_btn.pack(fill=tk.X, padx=5, pady=2)
 
 esp_btn = AnimatedButton(left_panel, text="ESP", bg="#0d0d0d", fg="#ffffff", command=load_esp, font=("Arial", 8), width=12)
-esp_btn.pack(fill=tk.X, padx=3, pady=1)
+esp_btn.pack(fill=tk.X, padx=5, pady=2)
 
 fling_btn = AnimatedButton(left_panel, text="Fling", bg="#0d0d0d", fg="#ffffff", command=load_fling, font=("Arial", 8), width=12)
-fling_btn.pack(fill=tk.X, padx=3, pady=1)
+fling_btn.pack(fill=tk.X, padx=5, pady=2)
+
+walkspeed_btn = AnimatedButton(left_panel, text="WalkSpeed", bg="#0d0d0d", fg="#ffffff", command=load_walkspeed, font=("Arial", 8), width=12)
+walkspeed_btn.pack(fill=tk.X, padx=5, pady=2)
 
 scripts_list = tk.Listbox(left_panel, bg="#0d0d0d", fg="#ffffff", selectmode=tk.SINGLE, font=("Arial", 8), highlightthickness=0)
-scripts_list.pack(fill=tk.BOTH, expand=True, padx=3, pady=3)
+scripts_list.pack(fill=tk.BOTH, expand=True, padx=5, pady=3)
 scripts_list.bind('<Double-Button-1>', lambda e: load_selected_script())
 
 right_panel = tk.Frame(main_frame, bg="#0d0d0d")
@@ -695,7 +702,6 @@ for credit in credits:
     credit_labels.append(label)
 
 back_btn = AnimatedButton(button_frame, text="Back", bg="#1a1a1a", fg="#ffffff", command=show_main, font=("Arial", 8), width=12)
-
 
 def check_for_updates_on_startup():
     def fetch_updates():
