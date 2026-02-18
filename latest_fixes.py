@@ -685,7 +685,7 @@ credits_title.pack()
 
 credit_labels = []
 credits = [
-    "Menu / Executor Created by: Homer, Icey, Virck at https://discord.gg/ZxXAGrrBPh",
+    "Menu / Executor Created by: Homer, Icey, Jay, Virck at https://discord.gg/ZxXAGrrBPh",
     "API by: wearedevs",
     "Version: 1.4"
 ]
