@@ -303,7 +303,8 @@ GITHUB_SCRIPT_URLS = {
     "Fly": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fly.lua?raw=true"))()   """,
     "InfiniteJump": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/InfiniteJump.lua?raw=true"))()""",
     "Noclip": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Noclip.lua?raw=true"))()""",
-    "ESP": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Esp.lua?raw=true"))()"""
+    "ESP": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Esp.lua?raw=true"))()""",
+    "Fling": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fling.lua?raw=true"))()"""
 }
 
 def load_asset_script(script_name):
@@ -344,6 +345,9 @@ def load_noclip():
 
 def load_esp():
     load_asset_script("ESP")
+
+def load_fling():
+    load_asset_script("Fling")
 
 def debug_assets_folder():
     print(f"Debug: Asset scripts are now loaded from GitHub repository. Local assets folder is not used.")
@@ -468,6 +472,7 @@ def apply_theme(theme_name):
     infinitejump_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     noclip_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     esp_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    fling_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     scripts_list.configure(bg=theme["fg"], fg=theme["highlight"])
     script_input.configure(bg=theme["fg"], fg=theme["highlight"], insertbackground=theme["highlight"])
     updates_display.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -494,7 +499,7 @@ def apply_theme(theme_name):
             label.configure(bg=theme["bg"], fg=theme["highlight"])
 
     all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn, 
-                   aimbot_btn, fly_btn, infinitejump_btn, noclip_btn, esp_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
+                   aimbot_btn, fly_btn, infinitejump_btn, noclip_btn, esp_btn, fling_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
                    back_btn, check_updates_btn, fix_btn] + theme_buttons
 
     for btn in all_buttons:
@@ -600,6 +605,9 @@ noclip_btn.pack(fill=tk.X, padx=3, pady=1)
 
 esp_btn = AnimatedButton(left_panel, text="ESP", bg="#0d0d0d", fg="#ffffff", command=load_esp, font=("Arial", 8), width=12)
 esp_btn.pack(fill=tk.X, padx=3, pady=1)
+
+fling_btn = AnimatedButton(left_panel, text="Fling", bg="#0d0d0d", fg="#ffffff", command=load_fling, font=("Arial", 8), width=12)
+fling_btn.pack(fill=tk.X, padx=3, pady=1)
 
 scripts_list = tk.Listbox(left_panel, bg="#0d0d0d", fg="#ffffff", selectmode=tk.SINGLE, font=("Arial", 8), highlightthickness=0)
 scripts_list.pack(fill=tk.BOTH, expand=True, padx=3, pady=3)
