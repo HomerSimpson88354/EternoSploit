@@ -1,7 +1,5 @@
-You are currently on the latest version (v1.4). More scripts and bug fixes have been added as of 2/16/2026.
+You are currently on the latest version (v1.4). More scripts and bug fixes have been added as of 2/18/2026.
 
-It is recommended to daily check for bug fixes and feature updates by clicking "Check 4 Fixes" button.
-
-We have also removed some scripts that do not work.
+It is recommended to daily check for bug fixes and feature updates by clicking "Load Updates" button.
 
 Also we have added a section called Asset Scripts that have basic cheat functions.
