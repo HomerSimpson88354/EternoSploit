@@ -148,9 +148,7 @@ def load_scripts():
                 full_path = os.path.join(scripts_folder, file)
                 scripts_list.insert(tk.END, file)
                 scripts_list_dict[file] = full_path
-        if scripts_list_dict:
-            messagebox.showinfo("Successful", f"{len(scripts_list_dict)} Scripts loaded.")
-        else:
+        if not scripts_list_dict:
             messagebox.showwarning("Warning!", "No .lua or .txt files found!")
     except Exception as e:
         messagebox.showerror("Warning", str(e))
@@ -184,7 +182,6 @@ def attach_roblox():
             if isAttached() > 0:
                 attached = True
                 status_label.config(text="Status: ATTACHED", fg=current_theme["highlight"])
-                messagebox.showinfo("Successful", f"Successfully attached to Roblox!")
                 return
             else:
                 if attempt < max_retries:
@@ -208,7 +205,6 @@ def execute_code():
         return
     try:
         execute(code.encode('utf-8'))
-        messagebox.showinfo("Successful", "Script executed successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"Couldn't execute the script: {str(e)}")
         
@@ -259,7 +255,6 @@ def save_file():
                 f.write(code)
             current_file = file_path
             root.title(f"EternoSploit - {os.path.basename(file_path)}")
-            messagebox.showinfo("Successful", "File saved!")
         except Exception as e:
             messagebox.showerror("Error", f"File couldn't be saved: {str(e)}")
 
@@ -271,7 +266,6 @@ def load_and_execute_script(script_name, loadstring):
     if attached:
         try:
             execute(loadstring.encode('utf-8'))
-            messagebox.showinfo("Successful", f"{script_name} script executed.")
         except Exception as e:
             messagebox.showerror("Error", f"Couldn't execute {script_name}: {str(e)}")
     else:
@@ -323,7 +317,6 @@ def load_asset_script(script_name):
         root.title(f"EternoSploit - {script_name}")
         if attached:
             execute(script_loadstring.encode('utf-8'))
-            messagebox.showinfo("Successful", f"{script_name} script executed.")
         else:
             messagebox.showerror("Error", "Please attach to Roblox first.")
         print(f"Debug: Successfully loaded and executed {script_name}")
@@ -367,7 +360,6 @@ def check_for_updates():
             for update in updates_list:
                 updates_display.insert(tk.END, update + "\n")
             root.title("EternoSploit - Updates")
-            messagebox.showinfo("Updates", "Latest updates have been loaded into the updates box!")
         else:
             messagebox.showerror("Error", f"Failed to fetch updates from GitHub. Status code: {response.status_code}")
     except requests.exceptions.RequestException as e:
@@ -519,19 +511,20 @@ def cycle_theme():
 def show_settings():
     main_frame.pack_forget()
     settings_panel.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-    # Hide Settings button and show Back button in the same spot
+    
     settings_btn.pack_forget()
     back_btn.pack(side=tk.LEFT, padx=3, before=fix_btn)
 
 def show_main():
     settings_panel.pack_forget()
     main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-    # Hide Back button and show Settings button in the same spot
+    
     back_btn.pack_forget()
     settings_btn.pack(side=tk.LEFT, padx=3, before=fix_btn)
 
 # GUI functions are here.
 root = tk.Tk()
+root.attributes('-topmost', True)  
 root.title("EternoSploit")
 root.geometry("900x700")
 root.configure(bg="#0d0d0d")
