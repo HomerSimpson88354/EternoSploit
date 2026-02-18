@@ -59,6 +59,7 @@ getgenv().saveconfig = false
 loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
+THABRONX_LOADSTRING = """loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Wave-tb3-90971"))()"""
 
 # This is also a part of the update memory file function.
 def load_last_fixes_hash():
@@ -290,6 +291,9 @@ def load_rivals():
 def load_brookhaven():
     load_and_execute_script("Brookhaven RP Script", BROOKHAVEN_LOADSTRING)
 
+def load_thabronx():
+    load_and_execute_script("ThaBronx3", THABRONX_LOADSTRING)
+
 # These are basic exploit loadstring scripts. pretty fancy. 
 GITHUB_SCRIPT_URLS = {
     "Aimbot": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Aimbot.lua?raw=true"))()""",
@@ -344,6 +348,7 @@ def load_fling():
 
 def load_walkspeed():
     load_asset_script("WalkSpeed")
+
 
 def debug_assets_folder():
     print(f"Debug: Asset scripts are now loaded from GitHub repository. Local assets folder is not used.")
@@ -462,6 +467,7 @@ def apply_theme(theme_name):
     ruhub_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     rivals_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     brookhaven_btn.configure(bg=theme["fg"], fg=theme["highlight"])
+    thabronx_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     aimbot_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     fly_btn.configure(bg=theme["fg"], fg=theme["highlight"])
     infinitejump_btn.configure(bg=theme["fg"], fg=theme["highlight"])
@@ -494,7 +500,7 @@ def apply_theme(theme_name):
         for label in credit_labels:
             label.configure(bg=theme["bg"], fg=theme["highlight"])
 
-    all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn, 
+    all_buttons = [select_folder_btn, load_btn, infinite_yield_btn, owl_hub_btn, bloodyv2_btn, ruhub_btn, rivals_btn, brookhaven_btn, thabronx_btn, 
                    aimbot_btn, fly_btn, infinitejump_btn, noclip_btn, esp_btn, fling_btn, walkspeed_btn, attach_btn, execute_btn, kill_btn, open_btn, save_btn, settings_btn, 
                    back_btn, check_updates_btn, fix_btn] + theme_buttons
 
@@ -584,6 +590,9 @@ rivals_btn.pack(fill=tk.X, padx=5, pady=2)
 
 brookhaven_btn = AnimatedButton(left_panel, text="Diablo0011 (Brookhaven RP Only)", bg="#0d0d0d", fg="#ffffff", command=load_brookhaven, font=("Arial", 8), width=12)
 brookhaven_btn.pack(fill=tk.X, padx=5, pady=2)
+
+thabronx_btn = AnimatedButton(left_panel, text="TheBronx (Universal)", bg="#0d0d0d", fg="#ffffff", command=load_thabronx, font=("Arial", 8), width=12)
+thabronx_btn.pack(fill=tk.X, padx=5, pady=2)
 
 asset_scripts_label = tk.Label(left_panel, text="ASSET SCRIPTS", font=("Arial", 9, "bold"), bg="#1a1a1a", fg="#ffffff")
 asset_scripts_label.pack(pady=5)
