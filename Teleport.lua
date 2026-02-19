@@ -6,6 +6,8 @@ local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
 local gui = Instance.new("ScreenGui", localPlayer:WaitForChild("PlayerGui"))
 gui.Name = "EternoTeleport"
 gui.ResetOnSpawn = false
+gui.DisplayOrder = 100 -- High value to ensure it renders on top of other GUIs
+gui.IgnoreGuiInset = true -- Ignore Roblox's default insets like the topbar
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 350)
@@ -97,7 +99,6 @@ frontToggle.MouseButton1Click:Connect(function()
     frontToggle.Text = isFront and "Infront / Back" or "Front / Back of Player"
 end)
 
-
 local isActive = false
 local toggleBtn = Instance.new("TextButton", mainFrame)
 toggleBtn.Position = UDim2.new(0, 10, 0, 220)
@@ -141,3 +142,4 @@ task.spawn(function()
         task.wait(0)
     end
 end)
+
