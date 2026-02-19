@@ -3,11 +3,16 @@ local RunService = game:GetService("RunService")
 local localPlayer = Players.LocalPlayer
 local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
 
+
+localPlayer.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+end)
+
 local gui = Instance.new("ScreenGui", localPlayer:WaitForChild("PlayerGui"))
 gui.Name = "EternoTeleport"
 gui.ResetOnSpawn = false
-gui.DisplayOrder = 100 -- High value to ensure it renders on top of other GUIs
-gui.IgnoreGuiInset = true -- Ignore Roblox's default insets like the topbar
+gui.DisplayOrder = 100 
+gui.IgnoreGuiInset = true 
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 350)
@@ -92,11 +97,11 @@ frontToggle.Position = UDim2.new(0, 10, 0, 180)
 frontToggle.Size = UDim2.new(1, -20, 0, 30)
 frontToggle.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
 frontToggle.TextColor3 = Color3.new(1, 1, 1)
-frontToggle.Text = "Front / Back of Player"
+frontToggle.Text = "Front / Back of Player "
 local isFront = true
 frontToggle.MouseButton1Click:Connect(function()
     isFront = not isFront
-    frontToggle.Text = isFront and "Infront / Back" or "Front / Back of Player"
+    frontToggle.Text = isFront and "Infront / Back of Player" or "Front / Back of Player"
 end)
 
 local isActive = false
@@ -135,9 +140,13 @@ end)
 
 task.spawn(function()
     while true do
-        if isActive and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") and character and character:FindFirstChild("HumanoidRootPart") then
-            local offset = isFront and Vector3.new(0, 0, -2) or Vector3.new(0, 0, 2) -- Reduced offset from 5 to 2 studs for closer teleport
-            character:MoveTo(selectedPlayer.Character.HumanoidRootPart.Position + (selectedPlayer.Character.HumanoidRootPart.CFrame.LookVector * offset.Z))
+       
+        if isActive and selectedPlayer and character then
+            local targetCharacter = selectedPlayer.Character
+            if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart") then
+                local offset = isFront and Vector3.new(0, 0, -2) or Vector3.new(0, 0, 2)
+                character:MoveTo(targetCharacter.HumanoidRootPart.Position + (targetCharacter.HumanoidRootPart.CFrame.LookVector * offset.Z))
+            end
         end
         task.wait(0)
     end
