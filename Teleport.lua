@@ -101,7 +101,7 @@ frontToggle.Text = "Front / Back of Player "
 local isFront = true
 frontToggle.MouseButton1Click:Connect(function()
     isFront = not isFront
-    frontToggle.Text = isFront and "Front" or "Back"
+    frontToggle.Text = isFront and "Back" or "Front"
 end)
 
 local isActive = false
@@ -151,5 +151,6 @@ task.spawn(function()
         task.wait(0)
     end
 end)
+
 
 
