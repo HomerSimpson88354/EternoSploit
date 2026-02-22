@@ -1,0 +1,5 @@
+Eterno v1.5 has oficially been released as of 2/22/2026! Please update to the latest version using the (Load Updates) button.
+
+Basically the entire gui has been overhauled along with windows 10 expansion and a key system integrated to verify usage. 
+
+And some more asset scripts and features have been added and bug fixes applied.
