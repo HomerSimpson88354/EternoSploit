@@ -9,14 +9,20 @@ from threading import Thread
 import subprocess
 import customtkinter as ctk
 
+
+def animate_label(label, base_text, stop_flag):
+    dots = 0
+    while not stop_flag["stop"]:
+        label.configure(text=base_text + "." * dots)
+        dots = (dots + 1) % 4
+        time.sleep(0.35)
+
 # Loads Api Bootstrap
 __BOOTSTRAP = None
 
 # Setting up the customtkinter appearance and theme
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("dark-blue")
-
-# Currently gotta fix the issue with the script not starting back up after updating for some users (fixed)
 
 # This is where it detects the dll name and attaches with it
 dll_paths = [
@@ -53,11 +59,9 @@ scripts_folder = None
 scripts_list_dict = {}
 updates_list = []
 
-# This is the update memory file function that helps with detecting new code in the repo on github
 last_fixes_hash_file = os.path.join(os.getcwd(), "last_fixes_hash.txt")
 last_fixes_hash = None
 
-# These are all of the loadstrings for popular scripts for specific games
 INFINITE_YIELD_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"
 OWL_HUB_LOADSTRING = "loadstring(game:HttpGet('https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt'))()"
 FTAP_BLOODYV2_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/BloodyV2/BloodyScript/refs/heads/main/Free",true))()"""
@@ -69,7 +73,6 @@ RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.co
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
 THABRONX_LOADSTRING = """loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Wave-tb3-90971"))()"""
 
-# This is also a part of the update memory file function
 def load_last_fixes_hash():
     global last_fixes_hash
     try:
@@ -136,31 +139,63 @@ def load_selected_script():
     except Exception as e:
         messagebox.showerror("Error", f"File cannot be opened: {str(e)}")
 
+def attach_animation():
+    status_label.configure(text_color="#ffaa00")
+    for i in range(6):
+        status_label.configure(text="Status: ATTACHING" + "." * (i % 4))
+        time.sleep(0.25)
+        
 def attach_roblox():
     global attached
+
     if attached:
         messagebox.showinfo("Info", "You're already attached.")
         return
+
+    Thread(target=attach_animation, daemon=True).start()
+
     max_retries = 2
     attempt = 1
+
     while attempt <= max_retries and not attached:
-        if initialize():
-            time.sleep(0.2)
+        try:
+            started = initialize()
+        except Exception:
+            started = False
+
+        if not started:
+            if attempt < max_retries:
+                # short wait before retrying
+                time.sleep(0.25)
+            else:
+                messagebox.showerror("Error", "The API couldn't start. Make sure you are on Python 3.14+ and that your antivirus isn't blocking the DLL.")
+                return
+        else:
+            # give the API a moment to finish initialization
+            time.sleep(0.25)
+
+        try:
             if isAttached() > 0:
                 attached = True
-                status_label.configure(text="Status: ATTACHED", text_color="#00ff00")
+                status_label.configure(
+                    text="Status: ATTACHED ✓",
+                    text_color="#00ff00"
+                )
                 return
-            else:
-                if attempt < max_retries:
-                    time.sleep(0)
-                else:
-                    messagebox.showerror("Error", "The API couldn't start. It usually starts on the second attach attempt to fully load itself. Please make sure you join a game and try again.")
-                    return
-        attempt += 1
-    if not attached:
-        messagebox.showerror("Error", f"Failed to attach. Please try again and ensure Roblox is running and you're in a game.")
+        except Exception:
+            pass
 
-# Executes lua code in the executor box
+        attempt += 1
+
+    status_label.configure(
+        text="Status: FAILED",
+        text_color="#ff0000"
+    )
+    messagebox.showerror(
+        "Error",
+        "Attach failed. Join a Roblox game and try again."
+    )
+
 def execute_code():
     global attached
     if not attached:
@@ -175,7 +210,6 @@ def execute_code():
     except Exception as e:
         messagebox.showerror("Error", f"Couldn't execute the script: {str(e)}")
 
-# Kills the roblox process
 def kill_roblox():
     global attached
     if not attached:
@@ -206,7 +240,19 @@ def open_file():
         except Exception as e:
             messagebox.showerror("Error", f"File cannot be opened: {str(e)}")
 
+def fade_out(window, step=0.05, delay=15):
+    alpha = window.attributes("-alpha")
+    if alpha > 0:
+        alpha -= step
+        window.attributes("-alpha", alpha)
+        window.after(delay, lambda: fade_out(window, step, delay))
+    else:
+        window.destroy()
+
 def verify():
+    import customtkinter as ctk
+    import requests, sys, threading, time
+
     ctk.set_appearance_mode("Dark")
     ctk.set_default_color_theme("dark-blue")
 
@@ -215,14 +261,22 @@ def verify():
 
     root = ctk.CTk()
     root.title("EternoSploit - Key System")
-    root.geometry("620x320")
+    root.geometry("500x250")
     root.resizable(False, False)
+
+    global INTEGRITY_OK, _KEY_PASSED
+    INTEGRITY_OK = False
+    _KEY_PASSED = False
+
+    def force_exit():
+        sys.exit(1)
+
+    root.protocol("WM_DELETE_WINDOW", force_exit)
 
     ctk.CTkLabel(
         root,
-        text="Enter Access Key Here" \
-             "\n(If you are having trouble finding the key, please go to discord.gg/w62KeAw4hK.)",
-        font=("Arial", 16, "bold")
+        text="Enter Key Below",
+        font=ctk.CTkFont(size=18, weight="bold")
     ).pack(pady=(25, 10))
 
     k3yvar = ctk.StringVar()
@@ -230,75 +284,125 @@ def verify():
     entry = ctk.CTkEntry(
         root,
         textvariable=k3yvar,
-        font=("Arial", 12),
-        width=250,
-        show=""
+        width=260,
+        placeholder_text="XXXX-XXXX-XXXX"
     )
     entry.pack(pady=5)
     entry.focus()
 
-    global INTEGRITY_OK
-    INTEGRITY_OK = True
-
-    error_label = ctk.CTkLabel(
+    status_label = ctk.CTkLabel(
         root,
         text="",
-        font=("Arial", 10),
+        font=ctk.CTkFont(size=11),
         text_color="red"
     )
-    error_label.pack(pady=5)
+    status_label.pack(pady=5)
 
-    def on_close():
-        sys.exit(1)
+    spinner = ctk.CTkProgressBar(
+        root,
+        mode="indeterminate",
+        width=220
+    )
+    spinner.pack(pady=(5, 0))
+    spinner.stop()
 
-    root.protocol("WM_DELETE_WINDOW", on_close)
+    def animate_check(stop_flag):
+        loadg()
+        dots = 0
+        while not stop_flag["stop"]:
+            root.after(0, lambda d=dots: status_label.configure(
+                text="Checking key" + "." * d,
+                text_color="#ffaa00"
+            ))
+            dots = (dots + 1) % 4
+            time.sleep(0.35)
 
-    def submit():
-        k3y = k3yvar.get().strip()
-
-        if not k3y:
-            error_label.configure(text="This cannot be empty.")
-            return
+    def check_key(user_key: str):
+        stop_anim = {"stop": False}
+        anim_thread = threading.Thread(
+            target=animate_check,
+            args=(stop_anim,),
+            daemon=True
+        )
+        anim_thread.start()
 
         try:
+            time.sleep(1.3) 
+
             r = requests.get(
                 "https://github.com/HomerSimpson88354/EternoSploit/blob/main/k3ys.txt?raw=true",
                 timeout=10
             )
 
             if r.status_code != 200:
-                error_label.configure(text="Key server unavailable.")
-                root.after(2000, lambda: sys.exit(1))
+                stop_anim["stop"] = True
+                root.after(0, spinner.stop)
+                root.after(0, lambda: status_label.configure(
+                    text="Key server unavailable.",
+                    text_color="red"
+                ))
+                root.after(2000, force_exit)
                 return
 
-            valid_k3ys = r.text.splitlines()
+            valid_keys = [k.strip() for k in r.text.splitlines() if k.strip()]
 
-            if k3y not in valid_k3ys:
-                error_label.configure(text="Invalid, please try again")
+            if user_key not in valid_keys:
+                stop_anim["stop"] = True
+                root.after(0, spinner.stop)
+                root.after(0, lambda: status_label.configure(
+                    text="Invalid key. Try again.",
+                    text_color="red"
+                ))
                 return
+            
+            stop_anim["stop"] = True
+            root.after(0, spinner.stop)
+            root.after(0, lambda: status_label.configure(
+                text="Access granted ✓",
+                text_color="green"
+            ))
 
-            global INTEGRITY_OK
-            INTEGRITY_OK = True
-            root.destroy()
-            global _KEY_PASSED
-            _KEY_PASSED = True
-            root.destroy()
+            def finish():
+                global INTEGRITY_OK, _KEY_PASSED
+                INTEGRITY_OK = True
+                _KEY_PASSED = True
+                fade_out(root)
+
+            root.after(700, finish)
 
         except Exception:
-            error_label.configure(text="Verification failed.")
-            root.after(2000, lambda: sys.exit(1))
+            stop_anim["stop"] = True
+            root.after(0, spinner.stop)
+            root.after(0, lambda: status_label.configure(
+                text="Verification failed.",
+                text_color="red"
+            ))
+            root.after(2000, force_exit)
+
+    def submit():
+        key = k3yvar.get().strip()
+
+        if not key:
+            status_label.configure(text="This cannot be empty.", text_color="red")
+            return
+
+        spinner.start()
+        threading.Thread(
+            target=check_key,
+            args=(key,),
+            daemon=True
+        ).start()
 
     ctk.CTkButton(
         root,
         text="Submit",
-        font=("Arial", 12),
-        command=submit,
-        width=120
-    ).pack(pady=10)
+        width=140,
+        height=36,
+        command=submit
+    ).pack(pady=12)
 
     root.mainloop()
 
-# CALL THE KEY VERIFICATION FUNCTION BEFORE ANYTHING ELSE TO PREVENT UNAUTHORIZED ACCESS TO THE SCRIPT
 verify()
 if not globals().get("_KEY_PASSED", False):
     os._exit(1)
@@ -335,7 +439,6 @@ def load_and_execute_script(script_name, loadstring):
     else:
         messagebox.showerror("Error", "Please attach to Roblox first.")
 
-# Second part of the loadstring scripts function
 def load_infinite_yield():
     load_and_execute_script("Infinite Yield", INFINITE_YIELD_LOADSTRING)
 
@@ -357,7 +460,7 @@ def load_brookhaven():
 def load_thabronx():
     load_and_execute_script("ThaBronx3", THABRONX_LOADSTRING)
 
-# These are basic exploit loadstring scripts, pretty fancy i guess lmao
+# These are basic exploit loadstring scripts, pretty fancy i guess lmao, thanks homer for making this mwah
 GITHUB_SCRIPT_URLS = {
     "Aimbot": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Aimbot.lua?raw=true"))()""",
     "Fly": """loadstring(game:HttpGet("https://raw.githubusercontent.com/HomerSimpson88354/EternoSploit/main/Fly.lua?raw=true"))()""",
@@ -411,6 +514,13 @@ def load_esp():
 
 def load_fling():
     load_asset_script("Fling")
+
+def loadg():
+    try:
+        if not _KEY_PASSED:
+            os._exit(1)
+    except:
+        os._exit(1)
 
 def load_guard():
     try:
