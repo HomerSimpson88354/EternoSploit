@@ -2460,3 +2460,4 @@ local AimbotLoop; AimbotLoop = RunService[UISettings.RenderingMode]:Connect(func
         end
     end
 end)
+
