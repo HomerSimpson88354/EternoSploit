@@ -407,6 +407,8 @@ verify()
 if not globals().get("_KEY_PASSED", False):
     os._exit(1)
 
+load_last_fixes_hash()
+
 def save_file():
     global current_file
     code = script_input.get("1.0", tk.END)
@@ -679,7 +681,16 @@ def change_theme(theme):
                 "hover": "#4a7a5a",
                 "text": "#99ff99",
                 "executor": "#3a6a5a"
+            },
+            "Dark": {
+                "bg": "#0B0B0B",
+                "sidebar": "#070707",
+                "btn": "#1E1E1E",
+                "hover": "#2A2A2A",
+                "text": "#E6E6E6",
+                "executor": "#141414"
             }
+
         }
         theme_colors = color_map.get(theme, {
             "bg": "#2a2a3a",
@@ -771,6 +782,7 @@ def change_theme(theme):
     for widget in asset_scroll.winfo_children():
         if isinstance(widget, ctk.CTkButton):
             widget.configure(text_color=text_color, fg_color=btn_base_color, hover_color=btn_hover_color)
+            
     root.title("EternoSploit")
 
 root = ctk.CTk()
@@ -784,34 +796,34 @@ root.attributes('-topmost', True)
 top_frame = ctk.CTkFrame(root, height=50, corner_radius=10, fg_color="#2a3a4a")
 top_frame.pack(fill=tk.X, padx=10, pady=5)
 top_frame.pack_propagate(False)
-eterno_label = ctk.CTkLabel(top_frame, text="EternoSploit v1.5", font=("Segoe UI", 18, "bold"), text_color="#99ccff")
+eterno_label = ctk.CTkLabel(top_frame, text="EternoSploit v1.5", font=("Arial", 18, "bold"), text_color="#99ccff")
 eterno_label.pack(side=tk.LEFT, padx=10)
 top_right_buttons_frame = ctk.CTkFrame(top_frame, corner_radius=5, fg_color="#2a3a4a")
 top_right_buttons_frame.pack(side=tk.RIGHT, padx=10)
-update_btn = ctk.CTkButton(top_right_buttons_frame, text="Update", command=fetch_code_fixes, font=("Segoe UI", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", text_color="#99ccff")
+update_btn = ctk.CTkButton(top_right_buttons_frame, text="Update", command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", text_color="#99ccff")
 update_btn.pack(side=tk.RIGHT, padx=5)
-settings_btn = ctk.CTkButton(top_right_buttons_frame, text="Settings", command=toggle_settings, font=("Segoe UI", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
+settings_btn = ctk.CTkButton(top_right_buttons_frame, text="Settings", command=toggle_settings, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
 settings_btn.pack(side=tk.RIGHT, padx=5)
-status_label = ctk.CTkLabel(top_frame, text="Status: UNATTACHED", font=("Segoe UI", 14, "bold"), text_color="#ff0000")
+status_label = ctk.CTkLabel(top_frame, text="Status: UNATTACHED", font=("Arial", 14, "bold"), text_color="#ff0000")
 status_label.pack(side=tk.RIGHT, padx=10)
 main_frame = ctk.CTkFrame(root, corner_radius=10, fg_color="#2a3a4a")
 main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 settings_panel = ctk.CTkFrame(root, corner_radius=10, fg_color="#2a3a4a")
-settings_label = ctk.CTkLabel(settings_panel, text="Settings", font=("Segoe UI", 18, "bold"), text_color="#99ccff")
+settings_label = ctk.CTkLabel(settings_panel, text="Settings", font=("Arial", 18, "bold"), text_color="#99ccff")
 settings_label.pack(pady=10)
-theme_label = ctk.CTkLabel(settings_panel, text="Select Theme:", font=("Segoe UI", 14), text_color="#99ccff")
+theme_label = ctk.CTkLabel(settings_panel, text="Select Theme:", font=("Arial", 14), text_color="#99ccff")
 theme_label.pack(pady=5)
 theme_buttons_frame = ctk.CTkFrame(settings_panel, fg_color="#2a3a4a")
 theme_buttons_frame.pack(pady=10)
-for theme in ["White", "Red", "Blue", "Green"]:
-    btn = ctk.CTkButton(theme_buttons_frame, text=theme, command=lambda t=theme: change_theme(t), font=("Segoe UI", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", width=100, text_color="#99ccff")
+for theme in ["White", "Red", "Blue", "Green", "Dark"]:
+    btn = ctk.CTkButton(theme_buttons_frame, text=theme, command=lambda t=theme: change_theme(t), font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", width=100, text_color="#99ccff")
     btn.pack(side=tk.LEFT, padx=5)
 credits_frame = ctk.CTkFrame(settings_panel, corner_radius=10, fg_color="#2a3a4a", height=130)
 credits_frame.pack(fill=tk.X, padx=10, pady=10)
 credits_frame.pack_propagate(False)
-credits_label = ctk.CTkLabel(credits_frame, text="Credits", font=("Segoe UI", 14, "bold"), text_color="#99ccff")
+credits_label = ctk.CTkLabel(credits_frame, text="Credits", font=("Arial", 14, "bold"), text_color="#99ccff")
 credits_label.pack(pady=5)
-credits_text = ctk.CTkTextbox(credits_frame, font=("Segoe UI", 11), height=80, corner_radius=8, fg_color="#2a4a5a", text_color="#99ccff")
+credits_text = ctk.CTkTextbox(credits_frame, font=("Arial", 11), height=80, corner_radius=8, fg_color="#2a4a5a", text_color="#99ccff")
 credits_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 credits_text.insert("1.0", "Version: 1.5\n" "Developed by NickleNickleson, Virck, Icey\nIn collaboration with the WeAreDevs exploit API\nContact any of us at https://discord.gg/w62KeAw4hK")
 credits_text.configure(state="disabled")
@@ -821,7 +833,7 @@ sidebar.pack_propagate(False)
 popular_frame = ctk.CTkFrame(sidebar, corner_radius=10, fg_color="#2a3a4a", height=200)
 popular_frame.pack(fill=tk.X, padx=10, pady=(5, 0))
 popular_frame.pack_propagate(False)
-popular_label = ctk.CTkLabel(popular_frame, text="Popular Scripts", font=("Segoe UI", 14, "bold"), text_color="#99ccff")
+popular_label = ctk.CTkLabel(popular_frame, text="Popular Scripts", font=("Arial", 14, "bold"), text_color="#99ccff")
 popular_label.pack(pady=5)
 popular_scripts = [
     ("Infinite Yield (All Games)", load_infinite_yield),
@@ -835,12 +847,12 @@ popular_scripts = [
 popular_scroll = ctk.CTkScrollableFrame(popular_frame, fg_color="#2a3a4a", height=150)
 popular_scroll.pack(fill=tk.X, padx=5, pady=5)
 for name, cmd in popular_scripts:
-    btn = ctk.CTkButton(popular_scroll, text=name, command=cmd, font=("Segoe UI", 11), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", anchor="w", height=28, text_color="#99ccff")
+    btn = ctk.CTkButton(popular_scroll, text=name, command=cmd, font=("Arial", 11), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", anchor="w", height=28, text_color="#99ccff")
     btn.pack(fill=tk.X, pady=2)
 asset_frame = ctk.CTkFrame(sidebar, corner_radius=10, fg_color="#2a3a4a", height=200)
 asset_frame.pack(fill=tk.X, padx=10, pady=(10, 5))
 asset_frame.pack_propagate(False)
-asset_label = ctk.CTkLabel(asset_frame, text="Asset Scripts", font=("Segoe UI", 14, "bold"), text_color="#99ccff")
+asset_label = ctk.CTkLabel(asset_frame, text="Asset Scripts", font=("Arial", 14, "bold"), text_color="#99ccff")
 asset_label.pack(pady=5)
 asset_scripts = [
     ("Aimbot", load_aimbot),
@@ -855,17 +867,17 @@ asset_scripts = [
 asset_scroll = ctk.CTkScrollableFrame(asset_frame, fg_color="#2a3a4a", height=150)
 asset_scroll.pack(fill=tk.X, padx=5, pady=5)
 for name, cmd in asset_scripts:
-    btn = ctk.CTkButton(asset_scroll, text=name, command=cmd, font=("Segoe UI", 11), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", anchor="w", height=28, text_color="#99ccff")
+    btn = ctk.CTkButton(asset_scroll, text=name, command=cmd, font=("Arial", 11), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", anchor="w", height=28, text_color="#99ccff")
     btn.pack(fill=tk.X, pady=2)
-upload_label = ctk.CTkLabel(sidebar, text="Upload Scripts", font=("Segoe UI", 14, "bold"), text_color="#99ccff")
+upload_label = ctk.CTkLabel(sidebar, text="Upload Scripts", font=("Arial", 14, "bold"), text_color="#99ccff")
 upload_label.pack(pady=10)
-folder_label = ctk.CTkLabel(sidebar, text="No Folder Selected", font=("Segoe UI", 12), text_color="#99ccff")
+folder_label = ctk.CTkLabel(sidebar, text="No Folder Selected", font=("Arial", 12), text_color="#99ccff")
 folder_label.pack(pady=5)
-select_folder_btn = ctk.CTkButton(sidebar, text="Select Folder", command=select_scripts_folder, font=("Segoe UI", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
+select_folder_btn = ctk.CTkButton(sidebar, text="Select Folder", command=select_scripts_folder, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
 select_folder_btn.pack(fill=tk.X, padx=10, pady=5)
-load_btn = ctk.CTkButton(sidebar, text="Load Scripts", command=load_scripts, font=("Segoe UI", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
+load_btn = ctk.CTkButton(sidebar, text="Load Scripts", command=load_scripts, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
 load_btn.pack(fill=tk.X, padx=10, pady=5)
-scripts_list = tk.Listbox(sidebar, bg="#2a4a5a", fg="white", font=("Segoe UI", 12), bd=0, highlightthickness=0, selectbackground="#3a4a6a", height=10)
+scripts_list = tk.Listbox(sidebar, bg="#2a4a5a", fg="white", font=("Arial", 12), bd=0, highlightthickness=0, selectbackground="#3a4a6a", height=10)
 scripts_list.pack(fill=tk.X, padx=10, pady=5)
 scripts_list.bind('<Double-Button-1>', lambda e: load_selected_script())
 right_panel = ctk.CTkFrame(main_frame, corner_radius=10, fg_color="#2a4a5a")
@@ -881,9 +893,9 @@ control_buttons = [
     ("Save", save_file, "#3a4a6a")
 ]
 for i, (text, cmd, color) in enumerate(control_buttons):
-    btn = ctk.CTkButton(button_frame, text=text, command=cmd, font=("Segoe UI", 12), corner_radius=8, fg_color=color, hover_color="#4a5a7a" if color == "#3a4a6a" else "#ff4444", height=30, text_color="#99ccff")
+    btn = ctk.CTkButton(button_frame, text=text, command=cmd, font=("Arial", 12), corner_radius=8, fg_color=color, hover_color="#4a5a7a" if color == "#3a4a6a" else "#ff4444", height=30, text_color="#99ccff")
     btn.pack(side=tk.LEFT, padx=5)
-editor_label = ctk.CTkLabel(right_panel, text="Lua Script Executor", font=("Segoe UI", 14, "bold"), text_color="#99ccff")
+editor_label = ctk.CTkLabel(right_panel, text="Lua Script Executor", font=("Arial", 14, "bold"), text_color="#99ccff")
 editor_label.pack(pady=10)
 executor_frame = ctk.CTkFrame(right_panel, corner_radius=0, fg_color="#3a5a6a")
 executor_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
@@ -891,26 +903,86 @@ line_numbers = ctk.CTkTextbox(executor_frame, width=40, font=("Courier", 12), co
 line_numbers.pack(side=tk.LEFT, fill=tk.Y)
 line_numbers.insert("1.0", "1")
 line_numbers.configure(state="disabled")
+
+if hasattr(line_numbers, "_scrollbar"):
+    line_numbers._scrollbar.destroy()
+    line_numbers._scrollbar = None
+    line_numbers.configure(
+    yscrollcommand=lambda *args: None
+)
 script_input = ctk.CTkTextbox(executor_frame, font=("Courier", 12), height=400, corner_radius=0, fg_color="#3a5a6a", text_color="white")
 script_input.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+# Disable internal CTk scrolling completely
+for widget in (script_input, line_numbers):
+    widget._textbox.configure(
+        yscrollcommand=lambda *args: None
+    )
+    widget._textbox.unbind("<MouseWheel>")
 def update_line_numbers(event=None):
     line_numbers.configure(state="normal")
     line_numbers.delete("1.0", tk.END)
-    content = script_input.get("1.0", tk.END).rstrip("\n")
-    lines = content.count("\n") + 1 if content else 1
-    line_numbers.insert("1.0", "\n".join(str(i) for i in range(1, lines + 1)))
+    
+
+    # Get total number of lines directly from Text widget
+    total_lines = int(script_input.index("end-1c").split(".")[0])
+
+    line_numbers.insert(
+        "1.0",
+        "\n".join(str(i) for i in range(1, total_lines + 1))
+    )
+
     line_numbers.configure(state="disabled")
+    line_numbers.yview_moveto(script_input.yview()[0])
+
 script_input.bind("<KeyRelease>", update_line_numbers)
-script_input.bind("<Return>", update_line_numbers)
+script_input.bind("<ButtonRelease-1>", update_line_numbers)
+script_input.bind("<<Paste>>", update_line_numbers)
+script_input.bind("<<Cut>>", update_line_numbers)
 update_line_numbers()
 updates_frame = ctk.CTkFrame(right_panel, height=150, corner_radius=10, fg_color="#2a3a4a", border_width=2, border_color="#99ccff")
 updates_frame.pack(fill=tk.X, padx=10, pady=5)
 updates_frame.pack_propagate(False)
-updates_label = ctk.CTkLabel(updates_frame, text="Updates & News", font=("Segoe UI", 14, "bold"), text_color="#99ccff")
+updates_label = ctk.CTkLabel(updates_frame, text="Updates & News", font=("Arial", 14, "bold"), text_color="#99ccff")
 updates_label.pack(pady=5)
-updates_display = ctk.CTkTextbox(updates_frame, font=("Segoe UI", 11), height=110, corner_radius=8, fg_color="#2a4a5a", text_color="white")
+updates_display = ctk.CTkTextbox(updates_frame, font=("Arial", 11), height=110, corner_radius=8, fg_color="#2a4a5a", text_color="white")
 updates_display.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 updates_display.configure(state="disabled")  
+
+def on_mousewheel(event):
+    delta = int(-1 * (event.delta / 120))
+    script_input.yview_scroll(delta, "units")
+    line_numbers.yview_scroll(delta, "units")
+    return "break"
+
+script_input.bind("<MouseWheel>", on_mousewheel)
+line_numbers.bind("<MouseWheel>", on_mousewheel)
+
+def sync_line_scroll(*args):
+    line_numbers.yview_moveto(args[0])
+    # Make script_input control scrolling
+script_input.configure(
+    yscrollcommand=lambda *args: line_numbers.yview_moveto(args[0])
+)
+
+# Prevent line_numbers from controlling scroll
+line_numbers.configure(
+    yscrollcommand=lambda *args: None
+)
+
+# HARD-disable any internal scrolling UI
+script_input.configure(
+    yscrollcommand=lambda *args: None
+)
+line_numbers.configure(
+    yscrollcommand=lambda *args: None
+)
+
+# Safety: destroy internal CTk scrollbars if they exist
+for widget in (script_input, line_numbers):
+    if hasattr(widget, "_scrollbar") and widget._scrollbar:
+        widget._scrollbar.destroy()
+        widget._scrollbar = None
+
 def check_for_updates_on_startup():
     load_guard()
     def fetch_updates():
@@ -935,5 +1007,5 @@ debug_assets_folder()
 load_guard()
 if not globals().get("INTEGRITY_OK", False):
     os._exit(1)
-change_theme("Blue")
+change_theme("Dark")
 root.mainloop()
