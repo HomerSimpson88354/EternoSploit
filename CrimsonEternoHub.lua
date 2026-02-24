@@ -1,0 +1,1198 @@
+
+
+
+
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+
+local Window = Rayfield:CreateWindow({
+    Name = "CrimsonEterno",
+    LoadingTitle = "Loading CrimsonEterno...",
+    LoadingSubtitle = "CrimsonEterno by Homer and Virck",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "CrimsonEternoConfig",
+        FileName = "Settings"
+    },
+    Discord = {
+        Enabled = false
+    },
+    KeySystem = false
+})
+
+
+Rayfield:Notify({
+    Title = "Theme Notice",
+    Content = "Crimson Moon Theme applied to in-game effects. GUI theming requires source edit (see script notes).",
+    Duration = 5,
+    Image = 4483362458
+})
+
+-- Tabs
+local MainTab = Window:CreateTab("Self Player Movement", 4483362458)
+local TeleportTab = Window:CreateTab("Teleport", 4483362458) 
+local ESPTab = Window:CreateTab("ESP", 4483362458)
+local OPTab = Window:CreateTab("OP", 4483362458)
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
+
+
+local Themes = {
+    CrimsonMoon = {Primary = Color3.fromRGB(139, 0, 0), Accent = Color3.fromRGB(50, 0, 0)},
+    MidnightShadow = {Primary = Color3.fromRGB(25, 25, 112), Accent = Color3.fromRGB(0, 0, 50)},
+    ToxicNeon = {Primary = Color3.fromRGB(0, 255, 0), Accent = Color3.fromRGB(0, 100, 0)},
+    ArcticFrost = {Primary = Color3.fromRGB(135, 206, 250), Accent = Color3.fromRGB(50, 50, 200)}
+}
+local CurrentTheme = Themes.CrimsonMoon
+
+local flyEnabled = false
+local noclipEnabled = false
+local espEnabled = false
+local tracersEnabled = false
+local boxesEnabled = false
+local namesEnabled = false
+local teamCheckEnabled = false
+local infJumpEnabled = false
+local walkSpeedValue = 16
+local playerToTeleport = ""
+local godModeEnabled = false
+local killAllEnabled = false
+local FlySpeed = 1
+local FlyBodyVelocity = nil
+local FlyBodyGyro = nil
+local InfJumpConnection = nil
+local NoclipConnection = nil
+local EspElements = {} 
+local EspColorPrimary = Color3.fromRGB(139, 0, 0)
+local EspColorAccent = Color3.fromRGB(50, 0, 0)
+local TracerThickness = 1
+local NameFontSize = 14
+local teleportEnabled = false
+local isFrontTeleport = true
+local teleportOffset = 3     
+local spinAfterTeleport = false 
+local TracerUpdateConnection = nil
+local clickTeleportEnabled = false
+local ClickTeleportConnection = nil
+
+
+local FlyButton = MainTab:CreateToggle({
+    Name = "Fly (Movement)",
+    CurrentValue = false,
+    Flag = "FlyToggle",
+    Callback = function(Value)
+        flyEnabled = Value
+        local lp = game.Players.LocalPlayer
+        local chr = lp.Character
+        if not chr then return end
+        local humRootPart = chr:FindFirstChild("HumanoidRootPart")
+        if not humRootPart then return end
+
+        if flyEnabled then
+            humRootPart.Anchored = false
+            FlyBodyVelocity = Instance.new("BodyVelocity")
+            FlyBodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            FlyBodyVelocity.Velocity = Vector3.new()
+            FlyBodyVelocity.Parent = humRootPart
+            FlyBodyGyro = Instance.new("BodyGyro")
+            FlyBodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
+            FlyBodyGyro.CFrame = humRootPart.CFrame
+            FlyBodyGyro.Parent = humRootPart
+            game:GetService("RunService").Heartbeat:Connect(function()
+                if flyEnabled then
+                    local camera = game.Workspace.CurrentCamera
+                    local look = camera.CFrame.LookVector
+                    local right = camera.CFrame.RightVector
+                    local up = Vector3.new(0, 1, 0)
+                    local moveDir = Vector3.new()
+                    if game.UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                        moveDir += look
+                    end
+                    if game.UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                        moveDir -= look
+                    end
+                    if game.UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                        moveDir -= right
+                    end
+                    if game.UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                        moveDir += right
+                    end
+                    if game.UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                        moveDir += up
+                    end
+                    if game.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                        moveDir -= up
+                    end
+                    FlyBodyVelocity.Velocity = moveDir * FlySpeed * 50
+                    FlyBodyGyro.CFrame = camera.CFrame
+                end
+            end)
+        else
+            if FlyBodyVelocity then
+                FlyBodyVelocity:Destroy()
+                FlyBodyVelocity = nil
+            end
+            if FlyBodyGyro then
+                FlyBodyGyro:Destroy()
+                FlyBodyGyro = nil
+            end
+        end
+    end
+})
+
+-- Fly Speed Slider
+local FlySpeedSlider = MainTab:CreateSlider({
+    Name = "Fly Speed (Movement)",
+    Range = {1, 10},
+    Increment = 1,
+    Suffix = "x",
+    CurrentValue = 1,
+    Flag = "FlySpeedSlider",
+    Callback = function(Value)
+        FlySpeed = Value
+    end
+})
+
+-- Infinite Jump Functionality (Adapted from EternoSploit InfiniteJump.lua)
+local InfJumpButton = MainTab:CreateToggle({
+    Name = "Infinite Jump (Movement)",
+    CurrentValue = false,
+    Flag = "InfJumpToggle",
+    Callback = function(Value)
+        infJumpEnabled = Value
+        if InfJumpConnection then
+            InfJumpConnection:Disconnect()
+            InfJumpConnection = nil
+        end
+        if infJumpEnabled then
+            local lp = game.Players.LocalPlayer
+            InfJumpConnection = game.UserInputService.JumpRequest:Connect(function()
+                if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+                    lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end)
+        end
+    end
+})
+
+-- Noclip Functionality (Improved for better collision bypassing)
+local NoclipButton = MainTab:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = false,
+    Flag = "NoclipToggle",
+    Callback = function(Value)
+        noclipEnabled = Value
+        if NoclipConnection then
+            NoclipConnection:Disconnect()
+            NoclipConnection = nil
+        end
+        if noclipEnabled then
+            local lp = game.Players.LocalPlayer
+            NoclipConnection = game:GetService("RunService").Stepped:Connect(function()
+                if lp.Character and noclipEnabled then
+                    for _, part in pairs(lp.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            local lp = game.Players.LocalPlayer
+            if lp.Character then
+                for _, part in pairs(lp.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+    end
+})
+
+-- WalkSpeed Slider
+local WalkSpeedSlider = MainTab:CreateSlider({
+    Name = "WalkSpeed (Movement)",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = " Studs/Sec",
+    CurrentValue = 16,
+    Flag = "WalkSpeedSlider",
+    Callback = function(Value)
+        walkSpeedValue = Value
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid.WalkSpeed = walkSpeedValue
+        end
+    end
+})
+
+-- Teleport Tab Exploits (Snippet‑style movement logic)
+
+-- helper that safely teleports the local character to a position by anchoring
+-- includes notifications when something goes wrong so the user can debug
+local function teleportToPosition(pos, targetCFrame)
+    local lp = game.Players.LocalPlayer
+    if not lp then
+        return
+    end
+    local char = lp.Character
+    if not char then
+        return
+    end
+    local myhrp = char:FindFirstChild("HumanoidRootPart")
+    if not myhrp then
+        return
+    end
+
+    local beforePos = myhrp.CFrame.Position
+
+    -- perform teleport inside pcall to catch any runtime issues
+    local ok, err = pcall(function()
+        myhrp.Anchored = true
+        -- Smoothly adjust CFrame with orientation matching the target's direction
+        myhrp.CFrame = CFrame.new(pos) * CFrame.Angles(0, targetCFrame.Y, 0)
+        task.wait(0.02) -- Reduced wait for faster response while still preventing glitches
+        myhrp.Anchored = false
+    end)
+    if not ok then
+        Rayfield:Notify({
+            Title = "Teleport Error",
+            Content = "Failed during teleport: " .. tostring(err),
+            Duration = 4,
+            Image = 4483362458
+        })
+    else
+        -- report resulting position to see if it actually changed
+        local afterPos = myhrp.CFrame.Position
+
+        if spinAfterTeleport then
+            -- create a short-lived gyro to rotate body and randomly orient the head
+            pcall(function()
+                local gyro = Instance.new("BodyGyro")
+                gyro.MaxTorque = Vector3.new(0, math.huge, 0)
+                gyro.P = 30000
+                gyro.CFrame = myhrp.CFrame
+                gyro.Parent = myhrp
+                local head = char:FindFirstChild("Head")
+                task.spawn(function()
+                    for i = 1, 20 do
+                        if gyro.Parent then
+                            gyro.CFrame = myhrp.CFrame * CFrame.Angles(0, math.rad(math.random(-45,45)), 0)
+                        end
+                        if head and head.Parent then
+                            head.CFrame = myhrp.CFrame * CFrame.new(0,1,0) * CFrame.Angles(math.rad(math.random(-20,20)), math.rad(math.random(-45,45)), 0)
+                        end
+                        task.wait(0.1)
+                    end
+                    gyro:Destroy()
+                end)
+            end)
+        end
+    end
+end
+
+-- utility to coerce any dropdown return into a usable string name
+local function sanitizeOption(opt)
+    -- handle common table wrappers first (Rayfield sometimes returns these)
+    if type(opt) == "table" then
+        -- single-element array (e.g. {"name"})
+        if #opt == 1 then
+            return sanitizeOption(opt[1])
+        end
+        -- named entries
+        if opt.Name then
+            return sanitizeOption(opt.Name)
+        end
+        if opt.value then
+            return sanitizeOption(opt.value)
+        end
+        if opt.Value then
+            return sanitizeOption(opt.Value)
+        end
+    end
+
+    if type(opt) == "string" then
+        -- guard against the string still being a table placeholder
+        if opt:match("^table:") then
+            Rayfield:Notify({
+                Title = "Option Warning",
+                Content = "Received string '"..opt.."' which looks like a table; using as-is.",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+        return opt
+    end
+
+    if typeof(opt) == "Instance" and opt.Name then
+        return opt.Name
+    end
+
+    -- last resort
+    Rayfield:Notify({
+        Title = "Option Warning",
+        Content = "Expected string option but received " .. typeof(opt) .. ". Coercing to string.",
+        Duration = 2,
+        Image = 4483362458
+    })
+    return tostring(opt)
+end
+
+-- build initial list of player names for the dropdown
+local playerNames = {}
+for _, plr in pairs(game.Players:GetPlayers()) do
+    table.insert(playerNames, plr.Name)
+end
+
+local TeleportDropdown = TeleportTab:CreateDropdown({
+    Name = "Select Player to Teleport (Select Player)",
+    Options = playerNames,
+    CurrentOption = "",
+    Flag = "TeleportDropdown",
+    Callback = function(Option)
+        local ok, err = pcall(function()
+            local rawOpt = Option
+            local name = sanitizeOption(rawOpt)
+            playerToTeleport = name
+
+            -- build diagnostic info for the chosen option
+            local info = "Selected " .. tostring(name) .. " (raw type: " .. type(rawOpt) .. ")"
+            if type(rawOpt) == "table" then
+                local parts = {}
+                for k,v in pairs(rawOpt) do
+                    table.insert(parts, tostring(k) .. ":" .. tostring(v))
+                end
+                info = info .. "\nraw contents: " .. table.concat(parts, ", ")
+            end
+
+            Rayfield:Notify({
+                Title = "Player Selected",
+                Content = info,
+                Duration = 4,
+                Image = 4483362458
+            })
+        end)
+        if not ok then
+            Rayfield:Notify({
+                Title = "Dropdown Callback Error",
+                Content = tostring(err),
+                Duration = 5,
+                Image = 4483362458
+            })
+        end
+    end
+})
+
+local OffsetSlider = TeleportTab:CreateSlider({
+    Name = "Teleport Distance (Distance To Teleport From Player)",
+    Range = {2, 10},
+    Increment = 1,
+    Suffix = "studs",
+    CurrentValue = teleportOffset,
+    Flag = "TeleportOffsetSlider",
+    Callback = function(val)
+        teleportOffset = val
+        Rayfield:Notify({
+            Title = "Offset Updated",
+            Content = "Teleport distance set to "..tostring(val) .." studs.",
+            Duration = 2,
+            Image = 4483362458
+        })
+    end
+})
+
+local SpinToggle = TeleportTab:CreateToggle({
+    Name = "Spin & Look After TP (Crazy Movement)",
+    CurrentValue = spinAfterTeleport,
+    Flag = "SpinToggle",
+    Callback = function(val)
+        spinAfterTeleport = val
+        Rayfield:Notify({
+            Title = "Post-TP Animation",
+            Content = val and "Enabled" or "Disabled",
+            Duration = 2,
+            Image = 4483362458
+        })
+    end
+})
+
+local TeleportButton = TeleportTab:CreateButton({
+    Name = "Teleport Once to Selected Player (Teleport)",
+    Callback = function()
+        local ok, err = pcall(function()
+            local lp = game.Players.LocalPlayer
+            if playerToTeleport == "" or playerToTeleport == nil then
+                return
+            end
+
+            local targetPlr = nil
+            -- make sure we use string name
+            if type(playerToTeleport) == "string" then
+                targetPlr = game.Players:FindFirstChild(playerToTeleport)
+            else
+                targetPlr = game.Players:FindFirstChild(tostring(playerToTeleport))
+            end
+            if not targetPlr or not targetPlr.Character or not lp.Character then
+                return
+            end
+
+            local hrp = targetPlr.Character:FindFirstChild("HumanoidRootPart")
+            local myhrp = lp.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp or not myhrp then
+                return
+            end
+
+            local offsetVal = isFrontTeleport and -teleportOffset or teleportOffset
+            local targetPos = hrp.Position + (hrp.CFrame.LookVector * offsetVal)
+
+            -- go through helper which anchors/unanchors automatically with target orientation
+            teleportToPosition(targetPos, hrp.CFrame)
+
+      
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+            end
+
+        end)
+        if not ok then
+            Rayfield:Notify({
+                Title = "Teleport Error",
+                Content = tostring(err),
+                Duration = 5,
+                Image = 4483362458
+            })
+        end
+    end
+})
+
+local ContinuousTeleportToggle = TeleportTab:CreateToggle({
+    Name = "Ram Teleport (Troll)",
+    CurrentValue = false,
+    Flag = "ContinuousTeleportToggle",
+    Callback = function(Value)
+        teleportEnabled = Value
+        if teleportEnabled then
+            Rayfield:Notify({
+                Title = "Continuous Ram Teleport Enabled",
+                Content = "You will continuously ram teleport to the selected player.",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+        end
+    end
+})
+
+local TeleClickButton = TeleportTab:CreateToggle({
+    Name = "Click Teleport (Tab)",
+    CurrentValue = false,
+    Flag = "TeleClickToggle",
+    Callback = function(val)
+        clickTeleportEnabled = val
+        if ClickTeleportConnection then
+            ClickTeleportConnection:Disconnect()
+            ClickTeleportConnection = nil
+        end
+        if clickTeleportEnabled then
+            local lp = game.Players.LocalPlayer
+            ClickTeleportConnection = game.UserInputService.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 and clickTeleportEnabled then
+                    local mouse = lp:GetMouse()
+                    local hit = mouse.Hit
+                    if hit then
+                        local character = lp.Character
+                        if character and character:FindFirstChild("HumanoidRootPart") then
+                            pcall(function()
+                                character.HumanoidRootPart.CFrame = CFrame.new(hit.Position + Vector3.new(0, 3, 0))
+                            end)
+                        end
+                    end
+                end
+            end)
+            Rayfield:Notify({
+                Title = "Click Teleport Enabled",
+                Content = "Click anywhere to teleport to that position.",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "Click Teleport Disabled",
+                Content = "Click teleportation stopped.",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    end
+})
+
+local PositionDropdown = TeleportTab:CreateDropdown({
+    Name = "Teleport Position",
+    Options = {"Front", "Back"},
+    CurrentOption = "Front",
+    Flag = "PositionDropdown",
+    Callback = function(opt)
+        local ok, err = pcall(function()
+            local choice = sanitizeOption(opt)
+            isFrontTeleport = (choice == "Front")
+        end)
+        if not ok then
+        end
+    end
+})
+
+local function updatePlayerList()
+    local newNames = {}
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        table.insert(newNames, plr.Name)
+    end
+    TeleportDropdown:Refresh(newNames, true)
+    if playerToTeleport ~= "" and not game.Players:FindFirstChild(playerToTeleport) then
+        playerToTeleport = ""
+    end
+end
+
+updatePlayerList()
+
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
+
+-- continuous teleport loop with smoother movement and rotation adjustment
+task.spawn(function()
+    while true do
+        if teleportEnabled and playerToTeleport and playerToTeleport ~= "" then
+            local ok, err = pcall(function()
+                local lp = game.Players.LocalPlayer
+                local targetPlr = nil
+                if type(playerToTeleport) == "string" then
+                    targetPlr = game.Players:FindFirstChild(playerToTeleport)
+                else
+                    targetPlr = game.Players:FindFirstChild(tostring(playerToTeleport))
+                end
+                if targetPlr and targetPlr.Character and lp.Character then
+                    local hrp = targetPlr.Character:FindFirstChild("HumanoidRootPart")
+                    local myhrp = lp.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp and myhrp then
+                        local offsetVal = isFrontTeleport and -teleportOffset or teleportOffset
+                        local targetPos = hrp.Position + (hrp.CFrame.LookVector * offsetVal)
+                        -- Use BodyVelocity for smoother transition during continuous teleport
+                        local bodyVelocity = Instance.new("BodyVelocity")
+                        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                        bodyVelocity.Velocity = (targetPos - myhrp.Position).Unit * 50
+                        bodyVelocity.Parent = myhrp
+                        -- Align orientation smoothly with BodyGyro
+                        local bodyGyro = Instance.new("BodyGyro")
+                        bodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
+                        bodyGyro.CFrame = CFrame.new(myhrp.Position) * CFrame.Angles(0, hrp.CFrame.Y, 0)
+                        bodyGyro.Parent = myhrp
+                        task.wait(0.1) -- Brief wait to apply velocity and gyro
+                        bodyVelocity:Destroy()
+                        bodyGyro:Destroy()
+                        -- Final adjustment with direct teleport for precision
+                        if (myhrp.Position - targetPos).Magnitude > 1 then
+                            teleportToPosition(targetPos, hrp.CFrame)
+                        end
+                    end
+                end
+            end)
+            if not ok then
+                Rayfield:Notify({
+                    Title = "Continuous TP Error",
+                    Content = tostring(err),
+                    Duration = 5,
+                    Image = 4483362458
+                })
+            end
+        end
+        task.wait(0.05) -- Adjusted wait time for smoother updates
+    end
+end)
+
+-- ESP Tab - Enhanced Settings with Fixed Bugs
+-- Main ESP Toggle
+local ESPButton = ESPTab:CreateToggle({
+    Name = "ESP (Master Toggle)",
+    CurrentValue = false,
+    Flag = "ESPToggle",
+    Callback = function(Value)
+        espEnabled = Value
+        local lp = game.Players.LocalPlayer
+        if espEnabled then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= lp and player.Character and (not teamCheckEnabled or (teamCheckEnabled and player.Team ~= lp.Team)) then
+                    EspElements[player] = {}
+                    -- Highlight (Base ESP)
+                    local highlight = Instance.new("Highlight")
+                    highlight.FillColor = EspColorPrimary
+                    highlight.OutlineColor = EspColorAccent
+                    highlight.FillTransparency = 0.5
+                    highlight.OutlineTransparency = 0
+                    highlight.Adornee = player.Character
+                    highlight.Parent = player.Character
+                    EspElements[player].Highlight = highlight
+                    -- Tracer
+                    if tracersEnabled then
+                        local tracer = Drawing.new("Line")
+                        tracer.Visible = false
+                        tracer.Color = EspColorAccent
+                        tracer.Thickness = TracerThickness
+                        tracer.Transparency = 1
+                        EspElements[player].Tracer = tracer
+                    end
+                    -- Box (Uses BillboardGui for simplicity in 3D)
+                    if boxesEnabled then
+                        local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                        if rootPart then
+                            local boxGui = Instance.new("BillboardGui")
+                            boxGui.Adornee = rootPart
+                            boxGui.Size = UDim2.new(2, 0, 3, 0)
+                            boxGui.StudsOffset = Vector3.new(0, 1, 0)
+                            boxGui.AlwaysOnTop = true
+                            local frame = Instance.new("Frame", boxGui)
+                            frame.Size = UDim2.new(1, 0, 1, 0)
+                            frame.BackgroundTransparency = 1
+                            local stroke = Instance.new("UIStroke", frame)
+                            stroke.Color = EspColorPrimary
+                            stroke.Thickness = 2
+                            boxGui.Parent = player.Character
+                            EspElements[player].Box = boxGui
+                        end
+                    end
+                    -- Name
+                    if namesEnabled then
+                        local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                        if rootPart then
+                            local nameGui = Instance.new("BillboardGui")
+                            nameGui.Adornee = rootPart
+                            nameGui.Size = UDim2.new(2, 0, 0.5, 0)
+                            nameGui.StudsOffset = Vector3.new(0, 2.5, 0)
+                            nameGui.AlwaysOnTop = true
+                            local textLabel = Instance.new("TextLabel", nameGui)
+                            textLabel.Size = UDim2.new(1, 0, 1, 0)
+                            textLabel.BackgroundTransparency = 1
+                            textLabel.TextColor3 = EspColorAccent
+                            textLabel.TextSize = NameFontSize
+                            textLabel.Text = player.Name
+                            nameGui.Parent = player.Character
+                            EspElements[player].Name = nameGui
+                        end
+                    end
+                end
+            end
+            -- Handle new players
+            game.Players.PlayerAdded:Connect(function(player)
+                if espEnabled and player ~= lp and player.Character and (not teamCheckEnabled or (teamCheckEnabled and player.Team ~= lp.Team)) then
+                    EspElements[player] = {}
+                    local highlight = Instance.new("Highlight")
+                    highlight.FillColor = EspColorPrimary
+                    highlight.OutlineColor = EspColorAccent
+                    highlight.FillTransparency = 0.5
+                    highlight.OutlineTransparency = 0
+                    highlight.Adornee = player.Character
+                    highlight.Parent = player.Character
+                    EspElements[player].Highlight = highlight
+                    if tracersEnabled then
+                        local tracer = Drawing.new("Line")
+                        tracer.Visible = false
+                        tracer.Color = EspColorAccent
+                        tracer.Thickness = TracerThickness
+                        tracer.Transparency = 1
+                        EspElements[player].Tracer = tracer
+                    end
+                    if boxesEnabled then
+                        local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                        if rootPart then
+                            local boxGui = Instance.new("BillboardGui")
+                            boxGui.Adornee = rootPart
+                            boxGui.Size = UDim2.new(2, 0, 3, 0)
+                            boxGui.StudsOffset = Vector3.new(0, 1, 0)
+                            boxGui.AlwaysOnTop = true
+                            local frame = Instance.new("Frame", boxGui)
+                            frame.Size = UDim2.new(1, 0, 1, 0)
+                            frame.BackgroundTransparency = 1
+                            local stroke = Instance.new("UIStroke", frame)
+                            stroke.Color = EspColorPrimary
+                            stroke.Thickness = 2
+                            boxGui.Parent = player.Character
+                            EspElements[player].Box = boxGui
+                        end
+                    end
+                    if namesEnabled then
+                        local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                        if rootPart then
+                            local nameGui = Instance.new("BillboardGui")
+                            nameGui.Adornee = rootPart
+                            nameGui.Size = UDim2.new(2, 0, 0.5, 0)
+                            nameGui.StudsOffset = Vector3.new(0, 2.5, 0)
+                            nameGui.AlwaysOnTop = true
+                            local textLabel = Instance.new("TextLabel", nameGui)
+                            textLabel.Size = UDim2.new(1, 0, 1, 0)
+                            textLabel.BackgroundTransparency = 1
+                            textLabel.TextColor3 = EspColorAccent
+                            textLabel.TextSize = NameFontSize
+                            textLabel.Text = player.Name
+                            nameGui.Parent = player.Character
+                            EspElements[player].Name = nameGui
+                        end
+                    end
+                end
+            end)
+            -- Update Tracers in real-time with proper connection management
+            if TracerUpdateConnection then
+                TracerUpdateConnection:Disconnect()
+            end
+            TracerUpdateConnection = game:GetService("RunService").RenderStepped:Connect(function()
+                if espEnabled and tracersEnabled then
+                    for player, elements in pairs(EspElements) do
+                        if elements.Tracer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local rootPart = player.Character.HumanoidRootPart
+                            local cam = game.Workspace.CurrentCamera
+                            local worldPos = rootPart.Position
+                            local screenPos, onScreen = cam:WorldToViewportPoint(worldPos)
+                            if onScreen then
+                                elements.Tracer.From = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y)
+                                elements.Tracer.To = Vector2.new(screenPos.X, screenPos.Y)
+                                elements.Tracer.Visible = true
+                            else
+                                elements.Tracer.Visible = false
+                            end
+                        end
+                    end
+                end
+            end)
+        else
+            if TracerUpdateConnection then
+                TracerUpdateConnection:Disconnect()
+                TracerUpdateConnection = nil
+            end
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Highlight then elements.Highlight:Destroy() end
+                    if elements.Tracer then elements.Tracer:Remove() end
+                    if elements.Box then elements.Box:Destroy() end
+                    if elements.Name then elements.Name:Destroy() end
+                end)
+            end
+            EspElements = {}
+        end
+    end
+})
+
+-- ESP Feature Toggles with Fixed Cleanup
+local TracersButton = ESPTab:CreateToggle({
+    Name = "Tracers (Line from Screen Bottom to Player)",
+    CurrentValue = false,
+    Flag = "TracersToggle",
+    Callback = function(Value)
+        tracersEnabled = Value
+        if espEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Tracer then
+                        elements.Tracer:Remove()
+                        elements.Tracer = nil
+                    end
+                    if tracersEnabled and player.Character then
+                        local tracer = Drawing.new("Line")
+                        tracer.Visible = false
+                        tracer.Color = EspColorAccent
+                        tracer.Thickness = TracerThickness
+                        tracer.Transparency = 1
+                        elements.Tracer = tracer
+                    end
+                end)
+            end
+        end
+    end
+})
+
+local BoxesButton = ESPTab:CreateToggle({
+    Name = "Boxes (3D Outline Around Player)",
+    CurrentValue = false,
+    Flag = "BoxesToggle",
+    Callback = function(Value)
+        boxesEnabled = Value
+        if espEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Box then
+                        elements.Box:Destroy()
+                        elements.Box = nil
+                    end
+                    if boxesEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local boxGui = Instance.new("BillboardGui")
+                        boxGui.Adornee = player.Character.HumanoidRootPart
+                        boxGui.Size = UDim2.new(2, 0, 3, 0)
+                        boxGui.StudsOffset = Vector3.new(0, 1, 0)
+                        boxGui.AlwaysOnTop = true
+                        local frame = Instance.new("Frame", boxGui)
+                        frame.Size = UDim2.new(1, 0, 1, 0)
+                        frame.BackgroundTransparency = 1
+                        local stroke = Instance.new("UIStroke", frame)
+                        stroke.Color = EspColorPrimary
+                        stroke.Thickness = 2
+                        boxGui.Parent = player.Character
+                        elements.Box = boxGui
+                    end
+                end)
+            end
+        end
+    end
+})
+
+local NamesButton = ESPTab:CreateToggle({
+    Name = "Names (Player Name Above Head)",
+    CurrentValue = false,
+    Flag = "NamesToggle",
+    Callback = function(Value)
+        namesEnabled = Value
+        if espEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Name then
+                        elements.Name:Destroy()
+                        elements.Name = nil
+                    end
+                    if namesEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local nameGui = Instance.new("BillboardGui")
+                        nameGui.Adornee = player.Character.HumanoidRootPart
+                        nameGui.Size = UDim2.new(2, 0, 0.5, 0)
+                        nameGui.StudsOffset = Vector3.new(0, 2.5, 0)
+                        nameGui.AlwaysOnTop = true
+                        local textLabel = Instance.new("TextLabel", nameGui)
+                        textLabel.Size = UDim2.new(1, 0, 1, 0)
+                        textLabel.BackgroundTransparency = 1
+                        textLabel.TextColor3 = EspColorAccent
+                        textLabel.TextSize = NameFontSize
+                        textLabel.Text = player.Name
+                        nameGui.Parent = player.Character
+                        elements.Name = nameGui
+                    end
+                end)
+            end
+        end
+    end
+})
+
+local TeamCheckButton = ESPTab:CreateToggle({
+    Name = "Team Check (Hide Allies)",
+    CurrentValue = false,
+    Flag = "TeamCheckToggle",
+    Callback = function(Value)
+        teamCheckEnabled = Value
+        if espEnabled then
+            local lp = game.Players.LocalPlayer
+            for player, elements in pairs(EspElements) do
+                if teamCheckEnabled and player.Team == lp.Team then
+                    pcall(function()
+                        if elements.Highlight then elements.Highlight:Destroy() end
+                        if elements.Tracer then elements.Tracer:Remove() end
+                        if elements.Box then elements.Box:Destroy() end
+                        if elements.Name then elements.Name:Destroy() end
+                        EspElements[player] = nil
+                    end)
+                end
+            end
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= lp and player.Character and not EspElements[player] and (not teamCheckEnabled or (teamCheckEnabled and player.Team ~= lp.Team)) then
+                    EspElements[player] = {}
+                    pcall(function()
+                        local highlight = Instance.new("Highlight")
+                        highlight.FillColor = EspColorPrimary
+                        highlight.OutlineColor = EspColorAccent
+                        highlight.FillTransparency = 0.5
+                        highlight.OutlineTransparency = 0
+                        highlight.Adornee = player.Character
+                        highlight.Parent = player.Character
+                        EspElements[player].Highlight = highlight
+                        if tracersEnabled then
+                            local tracer = Drawing.new("Line")
+                            tracer.Visible = false
+                            tracer.Color = EspColorAccent
+                            tracer.Thickness = TracerThickness
+                            tracer.Transparency = 1
+                            EspElements[player].Tracer = tracer
+                        end
+                        if boxesEnabled and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local boxGui = Instance.new("BillboardGui")
+                            boxGui.Adornee = player.Character.HumanoidRootPart
+                            boxGui.Size = UDim2.new(2, 0, 3, 0)
+                            boxGui.StudsOffset = Vector3.new(0, 1, 0)
+                            boxGui.AlwaysOnTop = true
+                            local frame = Instance.new("Frame", boxGui)
+                            frame.Size = UDim2.new(1, 0, 1, 0)
+                            frame.BackgroundTransparency = 1
+                            local stroke = Instance.new("UIStroke", frame)
+                            stroke.Color = EspColorPrimary
+                            stroke.Thickness = 2
+                            boxGui.Parent = player.Character
+                            EspElements[player].Box = boxGui
+                        end
+                        if namesEnabled and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local nameGui = Instance.new("BillboardGui")
+                            nameGui.Adornee = player.Character.HumanoidRootPart
+                            nameGui.Size = UDim2.new(2, 0, 0.5, 0)
+                            nameGui.StudsOffset = Vector3.new(0, 2.5, 0)
+                            nameGui.AlwaysOnTop = true
+                            local textLabel = Instance.new("TextLabel", nameGui)
+                            textLabel.Size = UDim2.new(1, 0, 1, 0)
+                            textLabel.BackgroundTransparency = 1
+                            textLabel.TextColor3 = EspColorAccent
+                            textLabel.TextSize = NameFontSize
+                            textLabel.Text = player.Name
+                            nameGui.Parent = player.Character
+                            EspElements[player].Name = nameGui
+                        end
+                    end)
+                end
+            end
+        end
+    end
+})
+
+-- ESP Color Pickers
+local PrimaryColorPicker = ESPTab:CreateColorPicker({
+    Name = "ESP Primary Color (Highlights, Boxes)",
+    Color = Color3.fromRGB(139, 0, 0),
+    Flag = "PrimaryColorPicker",
+    Callback = function(Value)
+        EspColorPrimary = Value
+        if espEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Highlight then
+                        elements.Highlight.FillColor = EspColorPrimary
+                    end
+                    if elements.Box and elements.Box:FindFirstChild("Frame") then
+                        elements.Box.Frame.UIStroke.Color = EspColorPrimary
+                    end
+                end)
+            end
+        end
+    end
+})
+
+local AccentColorPicker = ESPTab:CreateColorPicker({
+    Name = "ESP Accent Color (Outline, Tracers, Names)",
+    Color = Color3.fromRGB(50, 0, 0),
+    Flag = "AccentColorPicker",
+    Callback = function(Value)
+        EspColorAccent = Value
+        if espEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Highlight then
+                        elements.Highlight.OutlineColor = EspColorAccent
+                    end
+                    if elements.Tracer then
+                        elements.Tracer.Color = EspColorAccent
+                    end
+                    if elements.Name and elements.Name:FindFirstChild("TextLabel") then
+                        elements.Name.TextLabel.TextColor3 = EspColorAccent
+                    end
+                end)
+            end
+        end
+    end
+})
+
+-- Tracer Thickness Slider
+local TracerThicknessSlider = ESPTab:CreateSlider({
+    Name = "Tracer Thickness",
+    Range = {1, 5},
+    Increment = 1,
+    Suffix = "px",
+    CurrentValue = 1,
+    Flag = "TracerThicknessSlider",
+    Callback = function(Value)
+        TracerThickness = Value
+        if espEnabled and tracersEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Tracer then
+                        elements.Tracer.Thickness = TracerThickness
+                    end
+                end)
+            end
+        end
+    end
+})
+
+-- Name Font Size Slider
+local NameFontSizeSlider = ESPTab:CreateSlider({
+    Name = "Name Text Size",
+    Range = {10, 24},
+    Increment = 1,
+    Suffix = "pt",
+    CurrentValue = 14,
+    Flag = "NameFontSizeSlider",
+    Callback = function(Value)
+        NameFontSize = Value
+        if espEnabled and namesEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Name and elements.Name:FindFirstChild("TextLabel") then
+                        elements.Name.TextLabel.TextSize = NameFontSize
+                    end
+                end)
+            end
+        end
+    end
+})
+
+-- OP Tab (Overpowered Exploits)
+local GodModeButton = OPTab:CreateToggle({
+    Name = "God Mode (Invincibility)",
+    CurrentValue = false,
+    Flag = "GodModeToggle",
+    Callback = function(Value)
+        godModeEnabled = Value
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        if not character then return end
+        local humanoid = character:FindFirstChild("Humanoid")
+        if not humanoid then return end
+
+        if godModeEnabled then
+            humanoid.MaxHealth = math.huge
+            humanoid.Health = math.huge
+            game:GetService("RunService").Stepped:Connect(function()
+                if godModeEnabled then
+                    humanoid.Health = math.huge
+                end
+            end)
+        else
+            humanoid.MaxHealth = 100
+            humanoid.Health = 100
+        end
+    end
+})
+
+local KillAllButton = OPTab:CreateButton({
+    Name = "Kill All Players",
+    Callback = function()
+        local localPlayer = game.Players.LocalPlayer
+        local successCount = 0
+        local totalPlayers = 0
+        
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= localPlayer and plr.Character then
+                totalPlayers = totalPlayers + 1
+                local humanoid = plr.Character:FindFirstChild("Humanoid")
+                local rootPart = plr.Character:FindFirstChild("HumanoidRootPart")
+                if humanoid then
+                    pcall(function()
+                        humanoid.Health = 0
+                        if humanoid.Health > 0 then
+                            humanoid.PlatformStand = true
+                            humanoid.Sit = true
+                        end
+                        if rootPart then
+                            for _, joint in pairs(rootPart:GetChildren()) do
+                                if joint:IsA("Motor6D") or joint:IsA("Weld") then
+                                    joint:Destroy()
+                                end
+                            end
+                        end
+                        humanoid:TakeDamage(999999)
+                    end)
+                    successCount = successCount + 1
+                end
+            end
+        end
+    end
+})
+
+-- third person toggle
+local ThirdPersonToggle = MiscTab:CreateToggle({
+    Name = "Third Person View",
+    CurrentValue = false,
+    Flag = "ThirdPersonToggle",
+    Callback = function(val)
+        local cam = workspace.CurrentCamera
+        if val then
+            cam.CameraType = Enum.CameraType.Custom
+            cam.CameraSubject = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") or cam.CameraSubject
+            cam.CameraOffset = Vector3.new(0, 2, 6)
+        else
+            cam.CameraType = Enum.CameraType.Custom
+            cam.CameraOffset = Vector3.new(0, 0, 0)
+        end
+    end
+})
+
+local FOVSlider = MiscTab:CreateSlider({
+    Name = "Camera FOV",
+    Range = {30, 120}, -- Range remains broad for flexibility
+    Increment = 1,
+    Suffix = "°",
+    CurrentValue = 70, -- Set to 70 as the default value
+    Flag = "FOVSlider",
+    Callback = function(val)
+        workspace.CurrentCamera.FieldOfView = val
+    end
+})
+
+local AutoFarmPlaceholder = MiscTab:CreateButton({
+    Name = "Auto Farm (Placeholder)",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Auto Farm Not Implemented",
+            Content = "Add game-specific auto farm logic to this script.",
+            Duration = 5,
+            Image = 4483362458
+        })
+    end
+})
+
+-- Settings Tab (Theme Selection)
+local ThemeDropdown = SettingsTab:CreateDropdown({
+    Name = "Select Theme (In-Game Effects)",
+    Options = {"CrimsonMoon", "MidnightShadow", "ToxicNeon", "ArcticFrost"},
+    CurrentOption = "CrimsonMoon",
+    Flag = "ThemeDropdown",
+    Callback = function(Option)
+        CurrentTheme = Themes[Option]
+        Rayfield:Notify({
+            Title = "Theme Updated",
+            Content = Option .. " applied to in-game effects like ESP.",
+            Duration = 3,
+            Image = 4483362458
+        })
+        if espEnabled then
+            for player, elements in pairs(EspElements) do
+                pcall(function()
+                    if elements.Highlight then
+                        elements.Highlight.FillColor = CurrentTheme.Primary
+                        elements.Highlight.OutlineColor = CurrentTheme.Accent
+                    end
+                end)
+            end
+        end
+    end
+})
+
+local ThemeInfoLabel = SettingsTab:CreateLabel("Note: Full GUI theming requires Rayfield source edit. See script notes for details.")
+
+local DestroyGuiButton = SettingsTab:CreateButton({
+    Name = "Destroy GUI",
+    Callback = function()
+        Rayfield:Destroy()
+        Rayfield:Notify({
+            Title = "GUI Destroyed",
+            Content = "CrimsonEterno Exploit Hub has been removed.",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+})
+
+-- Final Notification
+Rayfield:Notify({
+    Title = "CrimsonEterno Loaded",
+    Content = "Exploit Hub is ready with enhanced teleport feature!",
+    Duration = 5,
+    Image = 4483362458
+})
