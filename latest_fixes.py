@@ -307,7 +307,6 @@ def verify():
     spinner.stop()
 
     def animate_check(stop_flag):
-        loadg()
         dots = 0
         while not stop_flag["stop"]:
             root.after(0, lambda d=dots: status_label.configure(
