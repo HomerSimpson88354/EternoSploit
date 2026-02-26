@@ -327,7 +327,7 @@ def verify():
         anim_thread.start()
 
         try:
-            time.sleep(1.3) 
+            time.sleep(0.5) 
 
             r = requests.get(
                 "https://github.com/HomerSimpson88354/EternoSploit/blob/main/k3ys.txt?raw=true",
