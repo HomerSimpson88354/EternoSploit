@@ -72,7 +72,8 @@ loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
 THABRONX_LOADSTRING = """loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Wave-tb3-90971"))()"""
-
+THECHOSENONE_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/blueEa1532/thechosenone/refs/heads/main/The_Chosen_One_Lite"))()"""
+CRIMSONETERNO_LOADSTRING = """loadstring(game:HttpGet("https://github.com/HomerSimpson88354/EternoSploit/blob/main/CrimsonEternoHub.lua?raw=true"))()"""
 def load_last_fixes_hash():
     global last_fixes_hash
     try:
@@ -447,7 +448,7 @@ def load_owl_hub():
     load_and_execute_script("Owl Hub", OWL_HUB_LOADSTRING)
 
 def load_ftap_bloodyv2():
-    load_and_execute_script("FTAP BloodyV2", FTAP_BLOODYV2_LOADSTRING)
+    load_and_execute_script("FTAP BloodyV2 (Key: BestScriptYK)", FTAP_BLOODYV2_LOADSTRING)
 
 def load_ruhub_ftap():
     load_and_execute_script("Ruhub FTAP", RUHUB_FTAP_LOADSTRING)
@@ -460,6 +461,12 @@ def load_brookhaven():
 
 def load_thabronx():
     load_and_execute_script("ThaBronx3", THABRONX_LOADSTRING)
+
+def load_thechosenone():
+    load_and_execute_script("FTAP TheChosenOne (Key: bash)", THECHOSENONE_LOADSTRING)
+
+def load_crimsoneterno():
+    load_and_execute_script("Crimson Eterno Hub (Key: Crimson)", CRIMSONETERNO_LOADSTRING)
 
 # These are basic exploit loadstring scripts, pretty fancy i guess lmao, thanks homer for making this mwah
 GITHUB_SCRIPT_URLS = {
@@ -837,11 +844,14 @@ popular_label.pack(pady=5)
 popular_scripts = [
     ("Infinite Yield (All Games)", load_infinite_yield),
     ("Owl Hub (All Games)", load_owl_hub),
-    ("FTAP BloodyV2 (FTAP Only)", load_ftap_bloodyv2),
+    ("FTAP BloodyV2 (Key: BestScriptYK)", load_ftap_bloodyv2),
     ("Ruhub FTAP (FTAP Only)", load_ruhub_ftap),
     ("Soluna (Rivals Only)", load_rivals),
     ("Diablo0011 (Brookhaven RP)", load_brookhaven),
-    ("TheBronx (Universal)", load_thabronx)
+    ("TheBronx (Universal)", load_thabronx),
+    ("FTAP TheChosenOne (Key: bash)", load_thechosenone),
+    ("Crimson Eterno Hub (Key: Crimson)", load_crimsoneterno)
+    
 ]
 popular_scroll = ctk.CTkScrollableFrame(popular_frame, fg_color="#2a3a4a", height=150)
 popular_scroll.pack(fill=tk.X, padx=5, pady=5)
