@@ -8,8 +8,24 @@ from ctypes import c_char_p
 from threading import Thread
 import subprocess
 import customtkinter as ctk
+# save hash
+def save_key_hash(key: str):
+    try:
+        with open(KEY_FILE, "w", encoding="utf-8") as f:
+            f.write(hash_key(key))
+    except Exception as e:
+        print("Failed to save key hash:", e)
 
+# store hash 
+APPDATA_DIR = os.path.join(os.getenv("APPDATA"), "EternoSploit")
+KEY_FILE = os.path.join(APPDATA_DIR, "key.hash")
 
+os.makedirs(APPDATA_DIR, exist_ok=True)
+
+def hash_key(key: str) -> str:
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
+# animation helper
 def animate_label(label, base_text, stop_flag):
     dots = 0
     while not stop_flag["stop"]:
@@ -72,32 +88,6 @@ loadstring(Main)()"""
 RIVALS_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/rivals-classic.lua",true))()"""
 BROOKHAVEN_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/diablo0011/BrookhavenRPScript/refs/heads/main/BrookhavenRPScript.Lua"))()"""
 THABRONX_LOADSTRING = """loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Wave-tb3-90971"))()"""
-THECHOSENONE_LOADSTRING = """loadstring(game:HttpGet("https://raw.githubusercontent.com/blueEa1532/thechosenone/refs/heads/main/The_Chosen_One_Lite"))()"""
-CRIMSONETERNO_LOADSTRING = """loadstring(game:HttpGet("https://github.com/HomerSimpson88354/EternoSploit/blob/main/CrimsonEternoHub.lua?raw=true"))()"""
-def load_last_fixes_hash():
-    global last_fixes_hash
-    try:
-        if os.path.exists(last_fixes_hash_file):
-            with open(last_fixes_hash_file, 'r', encoding='utf-8') as f:
-                last_fixes_hash = f.read().strip()
-        else:
-            last_fixes_hash = None
-    except Exception as e:
-        print(f"Debug: Failed to load last fixes hash: {str(e)}")
-        last_fixes_hash = None
-
-def save_last_fixes_hash(new_hash):
-    global last_fixes_hash
-    try:
-        with open(last_fixes_hash_file, 'w', encoding='utf-8') as f:
-            f.write(new_hash)
-        last_fixes_hash = new_hash
-        print(f"Debug: Saved new fixes hash: {new_hash}")
-    except Exception as e:
-        print(f"Debug: Failed to save last fixes hash: {str(e)}")
-
-def compute_hash(content):
-    return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
 def select_scripts_folder():
     global scripts_folder
@@ -250,6 +240,36 @@ def fade_out(window, step=0.05, delay=15):
     else:
         window.destroy()
 
+def auto_verify_key():
+    saved_hash = load_saved_key_hash()
+    if not saved_hash:
+        return False
+
+    try:
+        r = requests.get(
+            "https://github.com/HomerSimpson88354/EternoSploit/blob/main/k3ys.txt?raw=true",
+            timeout=10
+        )
+        if r.status_code != 200:
+            return False
+
+        valid_keys = [k.strip() for k in r.text.splitlines() if k.strip()]
+        valid_hashes = {hash_key(k) for k in valid_keys}
+
+        return saved_hash in valid_hashes
+
+    except:
+        return False
+    
+def load_saved_key_hash():
+    if not os.path.exists(KEY_FILE):
+        return None
+    try:
+        with open(KEY_FILE, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except:
+        return None
+    
 def verify():
     import customtkinter as ctk
     import requests, sys, threading, time
@@ -327,7 +347,7 @@ def verify():
         anim_thread.start()
 
         try:
-            time.sleep(0.5) 
+            time.sleep(1.3) 
 
             r = requests.get(
                 "https://github.com/HomerSimpson88354/EternoSploit/blob/main/k3ys.txt?raw=true",
@@ -361,15 +381,16 @@ def verify():
                 text="Access granted ✓",
                 text_color="green"
             ))
-
+            
             def finish():
                 global INTEGRITY_OK, _KEY_PASSED
+                save_key_hash(user_key)  
                 INTEGRITY_OK = True
                 _KEY_PASSED = True
                 fade_out(root)
 
             root.after(700, finish)
-
+        
         except Exception:
             stop_anim["stop"] = True
             root.after(0, spinner.stop)
@@ -403,11 +424,19 @@ def verify():
 
     root.mainloop()
 
-verify()
-if not globals().get("_KEY_PASSED", False):
-    os._exit(1)
 
-load_last_fixes_hash()
+# 1) Try auto verification first
+if auto_verify_key():
+    _KEY_PASSED = True
+    INTEGRITY_OK = True
+else:
+    # 2) Fall back to manual key verification UI
+    verify()
+
+# 3) Final guard: if still not verified, hard exit
+print("Key verification passed:", _KEY_PASSED)
+if not _KEY_PASSED:
+    os._exit(1)
 
 def save_file():
     global current_file
@@ -448,7 +477,7 @@ def load_owl_hub():
     load_and_execute_script("Owl Hub", OWL_HUB_LOADSTRING)
 
 def load_ftap_bloodyv2():
-    load_and_execute_script("FTAP BloodyV2 (Key: BestScriptYK)", FTAP_BLOODYV2_LOADSTRING)
+    load_and_execute_script("FTAP BloodyV2", FTAP_BLOODYV2_LOADSTRING)
 
 def load_ruhub_ftap():
     load_and_execute_script("Ruhub FTAP", RUHUB_FTAP_LOADSTRING)
@@ -461,12 +490,6 @@ def load_brookhaven():
 
 def load_thabronx():
     load_and_execute_script("ThaBronx3", THABRONX_LOADSTRING)
-
-def load_thechosenone():
-    load_and_execute_script("FTAP TheChosenOne (Key: bash)", THECHOSENONE_LOADSTRING)
-
-def load_crimsoneterno():
-    load_and_execute_script("Crimson Eterno Hub (Key: Crimson)", CRIMSONETERNO_LOADSTRING)
 
 # These are basic exploit loadstring scripts, pretty fancy i guess lmao, thanks homer for making this mwah
 GITHUB_SCRIPT_URLS = {
@@ -562,40 +585,6 @@ def check_for_updates():
             messagebox.showerror("Error", f"Failed to fetch updates from GitHub. Status code: {response.status_code}")
     except requests.exceptions.RequestException as e:
         messagebox.showerror("Error", f"Could not connect to GitHub for updates: {str(e)}")
-
-def fetch_code_fixes():
-    load_guard()
-    global last_fixes_hash
-    print(f"Debug: Current stored hash = {last_fixes_hash}")
-    github_fixes_url = "https://github.com/HomerSimpson88354/EternoSploit/blob/main/latest_fixes.py?raw=true"
-    current_script_path = os.path.abspath(sys.argv[0])
-    
-    try:
-        response = requests.get(github_fixes_url, timeout=10)
-        if response.status_code == 200:
-            new_content = response.text
-            new_hash = compute_hash(new_content)
-            print(f"Debug: New content hash = {new_hash}")
-            if last_fixes_hash == new_hash:
-                messagebox.showinfo("Up to Date", "You are already up to date with the latest version.")
-                print("Debug: Hashes match, no update needed")
-                return
-            
-            with open(current_script_path, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-            save_last_fixes_hash(new_hash)
-            messagebox.showinfo("Update Applied", "New version downloaded. Please reopen EternoSploit to apply changes.")
-            print("Debug: Script overwritten with new content, restarting EternoSploit")
-            restart_application()
-        else:
-            messagebox.showerror("Error", f"Failed to fetch code fixes. Status code: {response.status_code}")
-            print(f"Debug: Failed to fetch fixes, status code = {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        messagebox.showerror("Error", f"Could not connect to GitHub for code fixes: {str(e)}")
-        print(f"Debug: Exception during fetch = {str(e)}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to apply update: {str(e)}")
-        print(f"Debug: Error during script overwrite = {str(e)}")
 
 def restart_application():
     load_guard()
@@ -780,7 +769,6 @@ def change_theme(theme):
     for widget in sidebar.winfo_children():
         if isinstance(widget, ctk.CTkButton):
             widget.configure(text_color=text_color, fg_color=btn_base_color, hover_color=btn_hover_color)
-    update_btn.configure(text_color=text_color, fg_color=btn_base_color, hover_color=btn_hover_color)
     settings_btn.configure(text_color=text_color, fg_color=btn_base_color, hover_color=btn_hover_color)
     for widget in popular_scroll.winfo_children():
         if isinstance(widget, ctk.CTkButton):
@@ -806,8 +794,6 @@ eterno_label = ctk.CTkLabel(top_frame, text="EternoSploit v1.5", font=("Arial", 
 eterno_label.pack(side=tk.LEFT, padx=10)
 top_right_buttons_frame = ctk.CTkFrame(top_frame, corner_radius=5, fg_color="#2a3a4a")
 top_right_buttons_frame.pack(side=tk.RIGHT, padx=10)
-update_btn = ctk.CTkButton(top_right_buttons_frame, text="Update", command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", text_color="#99ccff")
-update_btn.pack(side=tk.RIGHT, padx=5)
 settings_btn = ctk.CTkButton(top_right_buttons_frame, text="Settings", command=toggle_settings, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
 settings_btn.pack(side=tk.RIGHT, padx=5)
 status_label = ctk.CTkLabel(top_frame, text="Status: UNATTACHED", font=("Arial", 14, "bold"), text_color="#ff0000")
@@ -844,14 +830,11 @@ popular_label.pack(pady=5)
 popular_scripts = [
     ("Infinite Yield (All Games)", load_infinite_yield),
     ("Owl Hub (All Games)", load_owl_hub),
-    ("FTAP BloodyV2 (Key: BestScriptYK)", load_ftap_bloodyv2),
+    ("FTAP BloodyV2 (FTAP Only)", load_ftap_bloodyv2),
     ("Ruhub FTAP (FTAP Only)", load_ruhub_ftap),
     ("Soluna (Rivals Only)", load_rivals),
     ("Diablo0011 (Brookhaven RP)", load_brookhaven),
-    ("TheBronx (Universal)", load_thabronx),
-    ("FTAP TheChosenOne (Key: bash)", load_thechosenone),
-    ("Crimson Eterno Hub (Key: Crimson)", load_crimsoneterno)
-    
+    ("TheBronx (Universal)", load_thabronx)
 ]
 popular_scroll = ctk.CTkScrollableFrame(popular_frame, fg_color="#2a3a4a", height=150)
 popular_scroll.pack(fill=tk.X, padx=5, pady=5)
@@ -1010,7 +993,6 @@ def check_for_updates_on_startup():
             pass
     thread = Thread(target=fetch_updates, daemon=True)
     thread.start()
-load_last_fixes_hash()
 root.after(500, check_for_updates_on_startup)
 debug_assets_folder()
 load_guard()
