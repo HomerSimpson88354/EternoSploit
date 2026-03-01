@@ -130,12 +130,7 @@ def load_selected_script():
     except Exception as e:
         messagebox.showerror("Error", f"File cannot be opened: {str(e)}")
 
-def attach_animation():
-    status_label.configure(text_color="#ffaa00")
-    for i in range(6):
-        status_label.configure(text="Status: ATTACHING" + "." * (i % 4))
-        time.sleep(0.25)
-        
+     
 def attach_roblox():
     global attached
 
@@ -143,48 +138,63 @@ def attach_roblox():
         messagebox.showinfo("Info", "You're already attached.")
         return
 
-    Thread(target=attach_animation, daemon=True).start()
+    # Update status immediately
+    status_label.configure(text_color="#ffaa00")
+    status_label.configure(text="Status: Attaching.")
+    root.update()  # Force GUI update
 
-    max_retries = 2
+    max_retries = 3
     attempt = 1
 
     while attempt <= max_retries and not attached:
         try:
+            # Initialize the API
             started = initialize()
-        except Exception:
-            started = False
-
-        if not started:
-            if attempt < max_retries:
-                # short wait before retrying
-                time.sleep(0.25)
+            
+            if not started:
+                if attempt < max_retries:
+                    status_label.configure(text=f"Status: INITIALIZING (Attempt {attempt + 1}/{max_retries})")
+                    root.update()
+                    time.sleep(0.5)  # Longer wait between retries
+                else:
+                    status_label.configure(text="Status: INITIALIZATION FAILED", text_color="#ff0000")
+                    messagebox.showerror("Error", "The API couldn't start. Make sure you are on Python 3.14+ and that your antivirus isn't blocking the DLL.")
+                    return
             else:
-                messagebox.showerror("Error", "The API couldn't start. Make sure you are on Python 3.14+ and that your antivirus isn't blocking the DLL.")
-                return
-        else:
-            # give the API a moment to finish initialization
-            time.sleep(0.25)
+                # Give the API more time to fully initialize
+                status_label.configure(text="Status: Attaching..")
+                root.update()
+                time.sleep(1.0)  # Increased wait time
 
-        try:
-            if isAttached() > 0:
-                attached = True
-                status_label.configure(
-                    text="Status: ATTACHED ✓",
-                    text_color="#00ff00"
-                )
-                return
-        except Exception:
-            pass
+                # Check attachment status multiple times
+                for check_attempt in range(5):
+                    try:
+                        if isAttached() > 0:
+                            attached = True
+                            status_label.configure(
+                                text="Status: ATTACHED ✓",
+                                text_color="#00ff00"
+                            )
+                            return
+                        time.sleep(0.2)  # Short wait between checks
+                    except Exception:
+                        time.sleep(0.2)
+                        continue
+
+        except Exception as e:
+            print(f"Attachment attempt {attempt} failed: {e}")
+            if attempt < max_retries:
+                time.sleep(0.5)
 
         attempt += 1
 
     status_label.configure(
-        text="Status: FAILED",
+        text="Status: FAILED TO ATTACH",
         text_color="#ff0000"
     )
     messagebox.showerror(
         "Error",
-        "Attach failed. Join a Roblox game and try again."
+        "Attach failed. Make sure Roblox is open and you're in a game, then try again."
     )
 
 def execute_code():
