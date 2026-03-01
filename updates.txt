@@ -1,4 +1,0 @@
-Eterno V1.5 - Implemented key hash save system, and made a few fixes. Currently fixing attachment issues regarding-
--multiple attempts to attach.
-
-Eterno V1.4 - End Of Life
