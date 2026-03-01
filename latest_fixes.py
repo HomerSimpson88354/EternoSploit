@@ -1,6 +1,11 @@
 # THIS CODE IS MEANT TO BE KEPT AS IS. ANY FORM OF MODIFICATION TO THE SCRIPT IS NOT RECOMMENDED, AS IT RUINS WHAT IT ACTUALLY IS FOR.
 # REACH OUT TO ANY OF THE DEVS AT https://discord.gg/w62KeAw4hK IF YOU HAVE ANY QUESTIONS.
 
+
+
+# jaka baka fireson town 
+
+
 import tkinter as tk
 from tkinter import scrolledtext, messagebox, filedialog
 import ctypes, time, sys, os, platform, requests, importlib, hashlib
@@ -8,7 +13,7 @@ from ctypes import c_char_p
 from threading import Thread
 import subprocess
 import customtkinter as ctk
-# save hash
+
 def save_key_hash(key: str):
     try:
         with open(KEY_FILE, "w", encoding="utf-8") as f:
@@ -16,7 +21,7 @@ def save_key_hash(key: str):
     except Exception as e:
         print("Failed to save key hash:", e)
 
-# store hash 
+ 
 APPDATA_DIR = os.path.join(os.getenv("APPDATA"), "EternoSploit")
 KEY_FILE = os.path.join(APPDATA_DIR, "key.hash")
 
@@ -25,7 +30,7 @@ os.makedirs(APPDATA_DIR, exist_ok=True)
 def hash_key(key: str) -> str:
     return hashlib.sha256(key.encode("utf-8")).hexdigest()
 
-# animation helper
+
 def animate_label(label, base_text, stop_flag):
     dots = 0
     while not stop_flag["stop"]:
@@ -33,10 +38,10 @@ def animate_label(label, base_text, stop_flag):
         dots = (dots + 1) % 4
         time.sleep(0.35)
 
-# Loads Api Bootstrap
+
 __BOOTSTRAP = None
 
-# Setting up the customtkinter appearance and theme
+
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("dark-blue")
 
@@ -164,35 +169,35 @@ def attach_roblox():
         messagebox.showinfo("Info", "You're already attached.")
         return
 
-    # Update status immediately
+    
     status_label.configure(text_color="#ffaa00")
     status_label.configure(text="Status: Attaching.")
-    root.update()  # Force GUI update
+    root.update()  
 
     max_retries = 3
     attempt = 1
 
     while attempt <= max_retries and not attached:
         try:
-            # Initialize the API
+            
             started = initialize()
             
             if not started:
                 if attempt < max_retries:
                     status_label.configure(text=f"Status: INITIALIZING (Attempt {attempt + 1}/{max_retries})")
                     root.update()
-                    time.sleep(0.5)  # Longer wait between retries
+                    time.sleep(0.5)  
                 else:
                     status_label.configure(text="Status: INITIALIZATION FAILED", text_color="#ff0000")
                     messagebox.showerror("Error", "The API couldn't start. Make sure you are on Python 3.14+ and that your antivirus isn't blocking the DLL.")
                     return
             else:
-                # Give the API more time to fully initialize
+                
                 status_label.configure(text="Status: Attaching..")
                 root.update()
-                time.sleep(1.0)  # Increased wait time
+                time.sleep(1.0)  
 
-                # Check attachment status multiple times
+               
                 for check_attempt in range(5):
                     try:
                         if isAttached() > 0:
@@ -202,7 +207,7 @@ def attach_roblox():
                                 text_color="#00ff00"
                             )
                             return
-                        time.sleep(0.2)  # Short wait between checks
+                        time.sleep(0.2) 
                     except Exception:
                         time.sleep(0.2)
                         continue
