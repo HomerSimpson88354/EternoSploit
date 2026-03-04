@@ -3,12 +3,12 @@
 
 
 
-# jaka baka fireson town 
+# thx to homer and virck for updates <3
 
 
 import tkinter as tk
 from tkinter import scrolledtext, messagebox, filedialog
-import ctypes, time, sys, os, platform, requests, importlib, hashlib
+import ctypes, time, sys, os, platform, requests, importlib, hashlib, json
 from ctypes import c_char_p
 from threading import Thread
 import subprocess
@@ -313,7 +313,7 @@ def load_saved_key_hash():
     
 def verify():
     import customtkinter as ctk
-    import requests, sys, threading, time
+    import requests, sys, threading, time, json
 
     ctk.set_appearance_mode("Dark")
     ctk.set_default_color_theme("dark-blue")
@@ -1118,4 +1118,616 @@ root.mainloop()
 
 
 
+UI_CACHE = {}
 
+def cache_if_present(name):
+    try:
+        obj = globals().get(name)
+        if obj is not None:
+            UI_CACHE[name] = obj
+    except Exception:
+        pass
+
+
+for n in (
+    "root", "main_frame", "settings_panel", "top_frame", "top_right_buttons_frame",
+    "popular_scroll", "asset_scroll", "updates_display", "scripts_list",
+    "script_input", "line_numbers", "sidebar", "right_panel", "button_frame",
+    "settings_btn", "update_btn", "status_label", "credits_text", "popular_frame",
+    "asset_frame", "updates_frame"
+):
+    cache_if_present(n)
+
+
+def build_cached_groups():
+    if "cached_labels" in UI_CACHE:
+        return
+    labels = []
+    buttons = []
+    theme_buttons = []
+    for name in ("top_frame", "sidebar", "popular_frame", "asset_frame", "updates_frame", "right_panel", "settings_panel"):
+        frame = UI_CACHE.get(name)
+        if not frame:
+            continue
+        try:
+            for w in frame.winfo_children():
+        
+                if hasattr(w, "configure"):
+                    cfg = w.configure
+             
+                    try:
+                        if "text_color" in cfg():
+                            labels.append(w)
+                    except Exception:
+                        pass
+                
+                    try:
+                        txt = ""
+                        if hasattr(w, "cget"):
+                            txt = w.cget("text")
+                        if hasattr(w, "configure") and "fg_color" in w.configure():
+                            buttons.append(w)
+                            if txt in ("White", "Red", "Blue", "Green", "Dark"):
+                                theme_buttons.append(w)
+                    except Exception:
+                        pass
+        except Exception:
+            continue
+    UI_CACHE["cached_labels"] = labels
+    UI_CACHE["cached_buttons"] = buttons
+    UI_CACHE["cached_theme_buttons"] = theme_buttons
+
+build_cached_groups()
+
+
+def cached_show_settings():
+    try:
+        load_guard()
+    except Exception:
+        pass
+    main = UI_CACHE.get("main_frame")
+    settings = UI_CACHE.get("settings_panel")
+    sbtn = UI_CACHE.get("settings_btn")
+    try:
+        if main:
+            main.pack_forget()
+        if settings:
+            settings.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        if sbtn:
+            sbtn.configure(text="Back")
+    except Exception:
+        pass
+
+def cached_show_main():
+    try:
+        load_guard()
+    except Exception:
+        pass
+    main = UI_CACHE.get("main_frame")
+    settings = UI_CACHE.get("settings_panel")
+    sbtn = UI_CACHE.get("settings_btn")
+    try:
+        if settings:
+            settings.pack_forget()
+        if main:
+            main.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        if sbtn:
+            sbtn.configure(text="Settings")
+    except Exception:
+        pass
+
+def cached_toggle_settings():
+    try:
+        load_guard()
+    except Exception:
+        pass
+    sbtn = UI_CACHE.get("settings_btn")
+    settings = UI_CACHE.get("settings_panel")
+    main = UI_CACHE.get("main_frame")
+    try:
+       
+        if settings and settings.winfo_ismapped():
+            
+            if settings:
+                settings.pack_forget()
+            if main:
+                main.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+            if sbtn:
+                sbtn.configure(text="Settings")
+        else:
+            if main:
+                main.pack_forget()
+            if settings:
+                settings.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+            if sbtn:
+                sbtn.configure(text="Back")
+    except Exception:
+        pass
+
+
+try:
+    if "settings_btn" in UI_CACHE and UI_CACHE["settings_btn"] is not None:
+        UI_CACHE["settings_btn"].configure(command=cached_toggle_settings)
+except Exception:
+    pass
+
+
+_original_change_theme = globals().get("change_theme")
+def cached_change_theme(theme):
+    
+    try:
+        if _original_change_theme:
+            _original_change_theme(theme)
+    except Exception:
+        pass
+
+    
+    build_cached_groups()
+    labels = UI_CACHE.get("cached_labels", [])
+    buttons = UI_CACHE.get("cached_buttons", [])
+    theme_btns = UI_CACHE.get("cached_theme_buttons", [])
+
+   
+    try:
+        
+        for lbl in labels:
+            try:
+                lbl.configure(text_color=current_text_color)
+            except Exception:
+                pass
+     
+        for btn in buttons:
+            try:
+                txt = btn.cget("text") if hasattr(btn, "cget") else ""
+                fg = current_btn_color if txt != "Kill Roblox" else "#ff3333"
+                hover = current_btn_hover_color if txt != "Kill Roblox" else "#ff4444"
+                btn.configure(text_color=current_text_color, fg_color=fg, hover_color=hover)
+            except Exception:
+                pass
+       
+        for tb in theme_btns:
+            try:
+                tb.configure(text_color=current_text_color, fg_color=current_btn_color, hover_color=current_btn_hover_color)
+            except Exception:
+                pass
+        
+        st = UI_CACHE.get("status_label")
+        if st:
+            try:
+                st.configure(text_color="#00ff00" if globals().get("attached") else "#ff0000")
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+if _original_change_theme:
+    globals()["change_theme"] = cached_change_theme
+
+
+def save_ui_state_to_cache():
+    try:
+        ud = UI_CACHE.get("updates_display")
+        if ud:
+            try:
+                UI_CACHE["updates_display_text"] = ud.get("1.0", tk.END)
+            except Exception:
+                pass
+        sl = UI_CACHE.get("scripts_list")
+        if sl:
+            try:
+                UI_CACHE["scripts_list_items"] = sl.get(0, tk.END)
+            except Exception:
+                pass
+        si = UI_CACHE.get("script_input")
+        if si:
+            try:
+                UI_CACHE["script_input_text"] = si.get("1.0", tk.END)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+def restore_ui_state_from_cache():
+    try:
+        ud = UI_CACHE.get("updates_display")
+        if ud and "updates_display_text" in UI_CACHE:
+            try:
+                ud.configure(state="normal")
+                ud.delete("1.0", tk.END)
+                ud.insert("1.0", UI_CACHE["updates_display_text"])
+                ud.configure(state="disabled")
+            except Exception:
+                pass
+        sl = UI_CACHE.get("scripts_list")
+        if sl and "scripts_list_items" in UI_CACHE:
+            try:
+                sl.delete(0, tk.END)
+                for it in UI_CACHE["scripts_list_items"]:
+                    sl.insert(tk.END, it)
+            except Exception:
+                pass
+        si = UI_CACHE.get("script_input")
+        if si and "script_input_text" in UI_CACHE:
+            try:
+                si.delete("1.0", tk.END)
+                si.insert("1.0", UI_CACHE["script_input_text"])
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+def _on_hide_save(event=None):
+    save_ui_state_to_cache()
+
+def _on_show_restore(event=None):
+    restore_ui_state_from_cache()
+
+try:
+    if UI_CACHE.get("main_frame"):
+        UI_CACHE["main_frame"].bind("<Unmap>", lambda e: _on_hide_save())
+        UI_CACHE["main_frame"].bind("<Map>", lambda e: _on_show_restore())
+    if UI_CACHE.get("settings_panel"):
+        UI_CACHE["settings_panel"].bind("<Unmap>", lambda e: _on_hide_save())
+        UI_CACHE["settings_panel"].bind("<Map>", lambda e: _on_show_restore())
+except Exception:
+    pass
+
+
+def warm_ui_cache():
+    build_cached_groups()
+    save_ui_state_to_cache()
+
+try:
+    warm_ui_cache()
+except Exception:
+    pass
+
+
+
+
+
+ 
+
+
+    THEME_CACHE_FILE = os.path.join(APPDATA_DIR, "theme_cache.json")
+
+    def save_theme_cache_async(theme_name=None):
+        def _save():
+            try:
+                payload = {
+                    "theme_name": theme_name if theme_name else globals().get("current_applied_theme", "Dark"),
+                    "current_bg_color": globals().get("current_bg_color"),
+                    "current_sidebar_color": globals().get("current_sidebar_color"),
+                    "current_text_color": globals().get("current_text_color"),
+                    "current_btn_color": globals().get("current_btn_color"),
+                    "current_btn_hover_color": globals().get("current_btn_hover_color"),
+                    "current_executor_shade": globals().get("current_executor_shade")
+                }
+                with open(THEME_CACHE_FILE, "w", encoding="utf-8") as cf:
+                    json.dump(payload, cf)
+            except Exception:
+                pass
+        Thread(target=_save, daemon=True).start()
+
+    def load_theme_cache():
+        try:
+            if os.path.exists(THEME_CACHE_FILE):
+                with open(THEME_CACHE_FILE, "r", encoding="utf-8") as cf:
+                    return json.load(cf)
+        except Exception:
+            pass
+        return None
+
+    def quick_apply_cached_colors(cached):
+        if not cached:
+            return
+      
+        globals()["current_bg_color"] = cached.get("current_bg_color", globals().get("current_bg_color"))
+        globals()["current_sidebar_color"] = cached.get("current_sidebar_color", globals().get("current_sidebar_color"))
+        globals()["current_text_color"] = cached.get("current_text_color", globals().get("current_text_color"))
+        globals()["current_btn_color"] = cached.get("current_btn_color", globals().get("current_btn_color"))
+        globals()["current_btn_hover_color"] = cached.get("current_btn_hover_color", globals().get("current_btn_hover_color"))
+        globals()["current_executor_shade"] = cached.get("current_executor_shade", globals().get("current_executor_shade"))
+        
+        build_cached_groups()
+        labels = UI_CACHE.get("cached_labels", [])
+        buttons = UI_CACHE.get("cached_buttons", [])
+        theme_btns = UI_CACHE.get("cached_theme_buttons", [])
+        
+        for frame_name in ("top_frame","main_frame","sidebar","popular_frame","asset_frame","updates_frame","right_panel","settings_panel","credits_frame","executor_frame"):
+            f = UI_CACHE.get(frame_name)
+            if f is not None and hasattr(f, "configure"):
+                try:
+                    f.configure(fg_color=globals()["current_bg_color"] if frame_name in ("top_frame","main_frame","button_frame","updates_frame","settings_panel") else globals()["current_sidebar_color"])
+                except Exception:
+                    pass
+      
+        si = UI_CACHE.get("script_input")
+        if si and hasattr(si, "configure"):
+            try:
+                si.configure(fg_color=globals()["current_executor_shade"], text_color=globals()["current_text_color"])
+            except Exception:
+                pass
+        ln = UI_CACHE.get("line_numbers")
+        if ln and hasattr(ln, "configure"):
+            try:
+                ln.configure(fg_color=globals()["current_executor_shade"], text_color="gray")
+            except Exception:
+                pass
+        ud = UI_CACHE.get("updates_display")
+        if ud and hasattr(ud, "configure"):
+            try:
+                ud.configure(fg_color=globals()["current_executor_shade"], text_color=globals()["current_text_color"])
+            except Exception:
+                pass
+        sl = UI_CACHE.get("scripts_list")
+        if sl:
+            try:
+                sl.configure(bg=globals()["current_sidebar_color"], fg=globals()["current_text_color"])
+            except Exception:
+                pass
+       
+        for lbl in labels:
+            try:
+                lbl.configure(text_color=globals()["current_text_color"])
+            except Exception:
+                pass
+       
+        for btn in buttons:
+            try:
+                txt = btn.cget("text") if hasattr(btn, "cget") else ""
+                fg = globals()["current_btn_color"] if txt != "Kill Roblox" else "#ff3333"
+                hover = globals()["current_btn_hover_color"] if txt != "Kill Roblox" else "#ff4444"
+                btn.configure(text_color=globals()["current_text_color"], fg_color=fg, hover_color=hover)
+            except Exception:
+                pass
+        for tb in theme_btns:
+            try:
+                tb.configure(text_color=globals()["current_text_color"], fg_color=globals()["current_btn_color"], hover_color=globals()["current_btn_hover_color"])
+            except Exception:
+                pass
+    
+        st = UI_CACHE.get("status_label")
+        if st:
+            try:
+                st.configure(text_color="#00ff00" if globals().get("attached") else "#ff0000")
+            except Exception:
+                pass
+
+    
+    try:
+        _orig_cached_change = globals().get("cached_change_theme")
+        if _orig_cached_change:
+            def _cached_change_theme_and_save(theme):
+                globals()["current_applied_theme"] = theme
+                try:
+                    
+                    theme_cache = load_theme_cache()
+                    if theme_cache and theme_cache.get("theme_name") == theme:
+                        quick_apply_cached_colors(theme_cache)
+
+                        Thread(target=lambda: _orig_cached_change(theme), daemon=True).start()
+                    else:
+                        
+                        _orig_cached_change(theme)
+                   
+                    save_theme_cache_async(theme)
+                except Exception:
+                    try:
+                        _orig_cached_change(theme)
+                        save_theme_cache_async(theme)
+                    except Exception:
+                        pass
+            globals()["cached_change_theme"] = _cached_change_theme_and_save
+            globals()["change_theme"] = globals()["cached_change_theme"]
+    except Exception:
+        pass
+
+   
+    _cached = load_theme_cache()
+    if _cached:
+        try:
+            globals()["current_applied_theme"] = _cached.get("theme_name", "Dark")
+            quick_apply_cached_colors(_cached)
+            
+            try:
+                ctk.set_appearance_mode("Dark" if "Dark" in _cached.get("theme_name", "Dark") else "Dark")
+            except Exception:
+                pass
+        except Exception:
+            pass
+    else:
+       
+        save_theme_cache_async(globals().get("current_applied_theme", "Dark"))
+
+       
+        try:
+            EXECUTOR_CACHE_FILE = os.path.join(APPDATA_DIR, "executor_cache_v1.json")
+
+            _orig_save_ui_state_to_cache = globals().get("save_ui_state_to_cache")
+            _orig_restore_ui_state_from_cache = globals().get("restore_ui_state_from_cache")
+
+            def _disk_save_ui_state_to_cache():
+                try:
+                    if callable(_orig_save_ui_state_to_cache):
+                        _orig_save_ui_state_to_cache()
+                except Exception:
+                    pass
+
+                try:
+                    payload = {}
+                    
+                    si = UI_CACHE.get("script_input")
+                    if si:
+                        try:
+                            payload["script_input_text"] = si.get("1.0", tk.END)
+                            payload["script_input_yview"] = si.yview()
+                        except Exception:
+                            pass
+                    ln = UI_CACHE.get("line_numbers")
+                    if ln:
+                        try:
+                            payload["line_numbers_text"] = ln.get("1.0", tk.END)
+                            payload["line_numbers_yview"] = ln.yview()
+                        except Exception:
+                            pass
+                    ud = UI_CACHE.get("updates_display")
+                    if ud:
+                        try:
+                            payload["updates_display_text"] = ud.get("1.0", tk.END)
+                        except Exception:
+                            pass
+                    sl = UI_CACHE.get("scripts_list")
+                    if sl:
+                        try:
+                            payload["scripts_list_items"] = sl.get(0, tk.END)
+                            payload["scripts_list_selection"] = sl.curselection()
+                        except Exception:
+                            pass
+
+                    if payload:
+                        try:
+                            with open(EXECUTOR_CACHE_FILE, "w", encoding="utf-8") as cf:
+                                json.dump(payload, cf)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+            def _disk_restore_ui_state_from_cache():
+                try:
+                    if callable(_orig_restore_ui_state_from_cache):
+                        _orig_restore_ui_state_from_cache()
+                except Exception:
+                    pass
+
+                try:
+                    if not os.path.exists(EXECUTOR_CACHE_FILE):
+                        return
+                    with open(EXECUTOR_CACHE_FILE, "r", encoding="utf-8") as cf:
+                        payload = json.load(cf)
+                except Exception:
+                    payload = None
+
+                if not payload:
+                    return
+
+                try:
+                    
+                    if "updates_display_text" in payload:
+                        UI_CACHE["updates_display_text"] = payload.get("updates_display_text")
+                    if "scripts_list_items" in payload:
+                        UI_CACHE["scripts_list_items"] = payload.get("scripts_list_items")
+                    if "script_input_text" in payload:
+                        UI_CACHE["script_input_text"] = payload.get("script_input_text")
+
+                    
+                    si = UI_CACHE.get("script_input")
+                    if si and "script_input_text" in payload:
+                        try:
+                            si.delete("1.0", tk.END)
+                            si.insert("1.0", payload.get("script_input_text", ""))
+                            
+                            yv = payload.get("script_input_yview")
+                            if yv and hasattr(si, "yview_moveto"):
+                                try:
+                                    
+                                    si.yview_moveto(float(yv[0]))
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
+
+                    ln = UI_CACHE.get("line_numbers")
+                    if ln and "line_numbers_text" in payload:
+                        try:
+                            ln.delete("1.0", tk.END)
+                            ln.insert("1.0", payload.get("line_numbers_text", ""))
+                            yv = payload.get("line_numbers_yview")
+                            if yv and hasattr(ln, "yview_moveto"):
+                                try:
+                                    ln.yview_moveto(float(yv[0]))
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
+
+                    ud = UI_CACHE.get("updates_display")
+                    if ud and "updates_display_text" in payload:
+                        try:
+                            ud.configure(state="normal")
+                            ud.delete("1.0", tk.END)
+                            ud.insert("1.0", payload.get("updates_display_text", ""))
+                            ud.configure(state="disabled")
+                        except Exception:
+                            pass
+
+                    sl = UI_CACHE.get("scripts_list")
+                    if sl and "scripts_list_items" in payload:
+                        try:
+                            sl.delete(0, tk.END)
+                            for it in payload.get("scripts_list_items", ()):
+                                sl.insert(tk.END, it)
+                            sel = payload.get("scripts_list_selection", ())
+                            if sel:
+                                try:
+                                    
+                                    sl.selection_clear(0, tk.END)
+                                    for idx in sel:
+                                        sl.selection_set(idx)
+                                        sl.see(idx)
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+            # install monkey-patched functions
+            globals()["save_ui_state_to_cache"] = _disk_save_ui_state_to_cache
+            globals()["restore_ui_state_from_cache"] = _disk_restore_ui_state_from_cache
+
+           
+            try:
+                _disk_restore_ui_state_from_cache()
+            except Exception:
+                pass
+
+           
+            try:
+                if UI_CACHE.get("main_frame"):
+                    UI_CACHE["main_frame"].bind("<Unmap>", lambda e: _disk_save_ui_state_to_cache())
+                    UI_CACHE["main_frame"].bind("<Map>", lambda e: _disk_restore_ui_state_from_cache())
+                if UI_CACHE.get("settings_panel"):
+                    UI_CACHE["settings_panel"].bind("<Unmap>", lambda e: _disk_save_ui_state_to_cache())
+                    UI_CACHE["settings_panel"].bind("<Map>", lambda e: _disk_restore_ui_state_from_cache())
+            except Exception:
+                pass
+
+            
+            try:
+                if "root" in globals() and hasattr(root, "protocol"):
+                    _prev = root.protocol("WM_DELETE_WINDOW")
+                    def _on_close_and_save():
+                        try:
+                            _disk_save_ui_state_to_cache()
+                        except Exception:
+                            pass
+                        try:
+                            if callable(_prev):
+                                _prev()
+                            else:
+                                root.destroy()
+                        except Exception:
+                            try:
+                                root.destroy()
+                            except Exception:
+                                pass
+                    root.protocol("WM_DELETE_WINDOW", _on_close_and_save)
+            except Exception:
+                pass
+
+        except Exception:
+            pass
