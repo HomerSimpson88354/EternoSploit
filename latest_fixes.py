@@ -646,7 +646,23 @@ def fetch_code_fixes():
             new_content = response.text
             new_hash = compute_hash(new_content)
             print(f"Debug: New content hash = {new_hash}")
-            if last_fixes_hash == new_hash:
+
+         
+            local_hash = None
+            try:
+                if os.path.exists(current_script_path):
+                    with open(current_script_path, 'r', encoding='utf-8') as f:
+                        local_content = f.read()
+                    local_hash = compute_hash(local_content)
+                    print(f"Debug: Local script hash = {local_hash}")
+            except Exception as e:
+                print(f"Debug: Failed to compute local hash: {e}")
+                local_hash = None
+
+           
+            compare_hash = local_hash if local_hash is not None else last_fixes_hash
+
+            if compare_hash == new_hash:
                 messagebox.showinfo("Up to Date", "You are already up to date with the latest version.")
                 print("Debug: Hashes match, no update needed")
                 return
@@ -792,7 +808,7 @@ def change_theme(theme):
     current_executor_shade = executor_shade
     top_frame.configure(fg_color=bg_color)
     top_right_buttons_frame.configure(fg_color=bg_color)
-    # ensure single Update button instead of creating duplicates
+ 
     global update_btn
     try:
         update_btn.configure(command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color=btn_base_color, hover_color=btn_hover_color, text_color=text_color)
@@ -1001,7 +1017,7 @@ if hasattr(line_numbers, "_scrollbar"):
 )
 script_input = ctk.CTkTextbox(executor_frame, font=("Courier", 12), height=400, corner_radius=0, fg_color="#3a5a6a", text_color="white")
 script_input.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-# Disable internal CTk scrolling completely
+
 for widget in (script_input, line_numbers):
     widget._textbox.configure(
         yscrollcommand=lambda *args: None
@@ -1012,7 +1028,7 @@ def update_line_numbers(event=None):
     line_numbers.delete("1.0", tk.END)
     
 
-    # Get total number of lines directly from Text widget
+    
     total_lines = int(script_input.index("end-1c").split(".")[0])
 
     line_numbers.insert(
@@ -1048,17 +1064,17 @@ line_numbers.bind("<MouseWheel>", on_mousewheel)
 
 def sync_line_scroll(*args):
     line_numbers.yview_moveto(args[0])
-    # Make script_input control scrolling
+    
 script_input.configure(
     yscrollcommand=lambda *args: line_numbers.yview_moveto(args[0])
 )
 
-# Prevent line_numbers from controlling scroll
+
 line_numbers.configure(
     yscrollcommand=lambda *args: None
 )
 
-# HARD-disable any internal scrolling UI
+
 script_input.configure(
     yscrollcommand=lambda *args: None
 )
@@ -1066,7 +1082,7 @@ line_numbers.configure(
     yscrollcommand=lambda *args: None
 )
 
-# Safety: destroy internal CTk scrollbars if they exist
+
 for widget in (script_input, line_numbers):
     if hasattr(widget, "_scrollbar") and widget._scrollbar:
         widget._scrollbar.destroy()
@@ -1098,3 +1114,8 @@ if not globals().get("INTEGRITY_OK", False):
     os._exit(1)
 change_theme("Dark")
 root.mainloop()
+
+
+
+
+
