@@ -792,8 +792,13 @@ def change_theme(theme):
     current_executor_shade = executor_shade
     top_frame.configure(fg_color=bg_color)
     top_right_buttons_frame.configure(fg_color=bg_color)
-    update_btn = ctk.CTkButton(top_right_buttons_frame, text="Update", command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", text_color="#99ccff")
-    update_btn.pack(side=tk.RIGHT, padx=5)
+    # ensure single Update button instead of creating duplicates
+    global update_btn
+    try:
+        update_btn.configure(command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color=btn_base_color, hover_color=btn_hover_color, text_color=text_color)
+    except NameError:
+        update_btn = ctk.CTkButton(top_right_buttons_frame, text="Update", command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color=btn_base_color, hover_color=btn_hover_color, text_color=text_color)
+        update_btn.pack(side=tk.RIGHT, padx=5)
     main_frame.configure(fg_color=bg_color)
     sidebar.configure(fg_color=sidebar_color)
     popular_frame.configure(fg_color=sidebar_color)  
@@ -881,6 +886,8 @@ eterno_label = ctk.CTkLabel(top_frame, text="EternoSploit v1.5", font=("Arial", 
 eterno_label.pack(side=tk.LEFT, padx=10)
 top_right_buttons_frame = ctk.CTkFrame(top_frame, corner_radius=5, fg_color="#2a3a4a")
 top_right_buttons_frame.pack(side=tk.RIGHT, padx=10)
+update_btn = ctk.CTkButton(top_right_buttons_frame, text="Update", command=fetch_code_fixes, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", text_color="#99ccff")
+update_btn.pack(side=tk.RIGHT, padx=5)
 settings_btn = ctk.CTkButton(top_right_buttons_frame, text="Settings", command=toggle_settings, font=("Arial", 12), corner_radius=8, fg_color="#3a4a6a", hover_color="#4a5a7a", height=30, text_color="#99ccff")
 settings_btn.pack(side=tk.RIGHT, padx=5)
 status_label = ctk.CTkLabel(top_frame, text="Status: UNATTACHED", font=("Arial", 14, "bold"), text_color="#ff0000")
@@ -904,7 +911,7 @@ credits_label = ctk.CTkLabel(credits_frame, text="Credits", font=("Arial", 14, "
 credits_label.pack(pady=5)
 credits_text = ctk.CTkTextbox(credits_frame, font=("Arial", 11), height=80, corner_radius=8, fg_color="#2a4a5a", text_color="#99ccff")
 credits_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-credits_text.insert("1.0", "Version: 1.5\n" "Developed by NickleNickleson, Virck, Icey\nIn collaboration with the WeAreDevs exploit API\nContact any of us at https://discord.gg/w62KeAw4hK")
+credits_text.insert("1.0", "Version: 1.5\n" "Developed by l2luv, Virck, Icey\nIn collaboration with the WeAreDevs exploit API\nContact any of us at https://discord.gg/w62KeAw4hK")
 credits_text.configure(state="disabled")
 sidebar = ctk.CTkFrame(main_frame, width=250, corner_radius=10, fg_color="#2a4a5a")
 sidebar.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10), pady=5)
