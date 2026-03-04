@@ -1,0 +1,9 @@
+Updated as of 3/3/2026
+
+Eterno V1.5 - Implemented key hash save system, and made a few fixes. 
+
+Currently fixing attachment issues regarding multiple attempts to attach.(FIXED)
+
+Update button replicates when changing theme colors.(FIXED)
+
+Eterno V1.4 - End Of Life
